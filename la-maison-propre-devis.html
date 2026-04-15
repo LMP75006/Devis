@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="La Maison Propre">
+<title>La Maison Propre — Devis</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+  .app{max-width:600px;margin:0 auto;padding:0 0 40px}
+  .screen{display:none}
+  .screen.active{display:block}
+
+  /* Header */
+  .header{background:#fff;border-bottom:1px solid #e8e8e4;padding:16px 20px;position:sticky;top:0;z-index:10}
+  .header-top{display:flex;align-items:center;gap:12px}
+  .back-btn{background:none;border:1px solid #d0d0cc;border-radius:8px;padding:7px 14px;font-size:13px;color:#555;cursor:pointer;font-family:inherit}
+  .header-title{font-size:17px;font-weight:600;color:#1a1a1a}
+  .step-badge{margin-left:auto;font-size:12px;color:#999;font-weight:500}
+
+  /* Home header */
+  .home-header{background:#1a1a1a;padding:28px 20px 24px;color:#fff}
+  .home-header .brand{font-size:12px;color:#888;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px}
+  .home-header h1{font-size:26px;font-weight:600;color:#fff}
+  .home-header .subtitle{font-size:13px;color:#888;margin-top:4px}
+
+  /* Content */
+  .content{padding:16px 20px}
+  .section{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid #e8e8e4}
+  .section-title{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px}
+
+  /* Stats */
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px}
+  .stat-card{background:#fff;border-radius:10px;padding:14px 10px;text-align:center;border:1px solid #e8e8e4}
+  .stat-val{font-size:22px;font-weight:700;color:#1a1a1a}
+  .stat-label{font-size:11px;color:#999;margin-top:3px}
+
+  /* Buttons */
+  .btn-primary{display:block;width:100%;padding:15px;background:#1a1a1a;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;text-align:center;margin-bottom:10px}
+  .btn-primary:active{opacity:0.8}
+  .btn-secondary{display:block;width:100%;padding:14px;background:#fff;color:#1a1a1a;border:1px solid #d0d0cc;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center;margin-bottom:10px}
+  .btn-secondary:active{background:#f5f5f0}
+  .btn-danger{background:#fff0f0;color:#c0392b;border-color:#f5c6c6}
+
+  /* Forms */
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  .field label{display:block;font-size:13px;font-weight:500;color:#555;margin-bottom:6px}
+  .field input,.field select,.field textarea{
+    width:100%;padding:12px 14px;border:1px solid #d8d8d4;border-radius:10px;
+    font-size:16px;font-family:inherit;background:#fff;color:#1a1a1a;
+    -webkit-appearance:none;appearance:none;outline:none
+  }
+  .field input:focus,.field select,.field textarea:focus{border-color:#1a1a1a}
+  .field textarea{resize:vertical;min-height:70px}
+  .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* Prestations */
+  .presta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .presta-item{background:#f9f9f7;border:1.5px solid #e8e8e4;border-radius:10px;padding:12px;cursor:pointer;transition:all 0.15s}
+  .presta-item.selected{background:#f0f0f8;border-color:#1a1a1a}
+  .presta-name{font-size:13px;font-weight:600;color:#1a1a1a;line-height:1.3}
+  .presta-price{font-size:12px;color:#888;margin-top:3px}
+  .qty-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+  .qty-btn{width:30px;height:30px;border:1px solid #d0d0cc;border-radius:8px;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a1a1a;font-family:inherit;line-height:1}
+  .qty-btn:active{background:#f0f0f0}
+  .qty-val{font-size:15px;font-weight:600;min-width:22px;text-align:center}
+  .add-btn{margin-top:8px;padding:5px 12px;background:#1a1a1a;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+
+  /* Summary lines */
+  .sum-line{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0ec;font-size:14px}
+  .sum-line:last-of-type{border-bottom:none}
+  .sum-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0 0;font-size:17px;font-weight:700;border-top:1.5px solid #1a1a1a;margin-top:4px}
+  .discount-row{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0ec}
+  .discount-row label{font-size:13px;color:#555;white-space:nowrap;font-weight:500}
+  .discount-row input{flex:1;padding:8px 12px;border:1px solid #d8d8d4;border-radius:8px;font-size:15px;font-family:inherit;background:#fff}
+
+  /* Signature */
+  .sig-zone{border:2px dashed #c0c0bc;border-radius:12px;background:#fafaf8;height:180px;position:relative;cursor:crosshair;overflow:hidden;touch-action:none}
+  .sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+  .sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#bbb;font-size:14px;pointer-events:none;text-align:center;white-space:nowrap}
+  .clear-sig-btn{background:none;border:none;color:#999;font-size:13px;margin-top:6px;cursor:pointer;font-family:inherit;padding:4px 0}
+
+  /* Recap */
+  .recap-box{background:#f9f9f7;border-radius:10px;padding:14px;margin-bottom:4px}
+  .recap-name{font-size:16px;font-weight:600;margin-bottom:4px}
+  .recap-line{font-size:13px;color:#666;margin-bottom:3px}
+  .recap-prestations{margin:10px 0;padding-top:10px;border-top:1px solid #e8e8e4}
+  .recap-presta-line{font-size:13px;color:#444;padding:3px 0}
+  .recap-total{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #e8e8e4;font-weight:700;font-size:15px}
+
+  /* Success */
+  .success-wrap{text-align:center;padding:40px 20px}
+  .success-circle{width:72px;height:72px;border-radius:50%;background:#e8f8ed;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+  .success-circle svg{width:36px;height:36px;stroke:#27ae60;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  .success-title{font-size:22px;font-weight:700;margin-bottom:8px}
+  .success-msg{font-size:15px;color:#666;margin-bottom:32px}
+  .success-btns{max-width:300px;margin:0 auto}
+
+  /* History */
+  .hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0ec}
+  .hist-item:last-child{border-bottom:none}
+  .hist-name{font-size:15px;font-weight:600}
+  .hist-date{font-size:12px;color:#999;margin-top:2px}
+  .hist-amount{font-size:15px;font-weight:700;text-align:right}
+  .hist-status{font-size:11px;font-weight:600;margin-top:3px;text-align:right}
+  .status-signed{color:#27ae60}
+  .status-pending{color:#e67e22}
+
+  /* Devis number */
+  .devis-num{font-size:12px;color:#999;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="home-header">
+    <div class="brand">S.A.R.L.</div>
+    <h1>La Maison Propre</h1>
+    <div class="subtitle">Application devis terrain</div>
+  </div>
+  <div class="content">
+    <button class="btn-primary" onclick="go('screen-client')">+ Nouveau devis</button>
+    <button class="btn-secondary" onclick="go('screen-history')">Historique des devis</button>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val" id="stat-count">0</div>
+        <div class="stat-label">Devis</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-signed">0</div>
+        <div class="stat-label">Signés</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="stat-ca">0€</div>
+        <div class="stat-label">CA prévu</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT -->
+<div class="screen" id="screen-client">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="go('screen-home')">← Retour</button>
+      <span class="header-title">Informations client</span>
+      <span class="step-badge">1 / 3</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">Client</div>
+      <div class="field"><label>Prénom et nom *</label><input type="text" id="client-name" placeholder="Marie Dupont" autocomplete="off"></div>
+      <div class="field"><label>Adresse du bien</label><input type="text" id="client-address" placeholder="12 rue des Lilas, Paris 75015"></div>
+      <div class="field"><label>Téléphone</label><input type="tel" id="client-phone" placeholder="06 12 34 56 78"></div>
+      <div class="field"><label>Email</label><input type="email" id="client-email" placeholder="marie@email.com"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Type de bien</div>
+      <div class="field">
+        <select id="logement-type">
+          <option value="">-- Choisir --</option>
+          <option>Studio</option>
+          <option>2 pièces</option>
+          <option>3 pièces</option>
+          <option>4 pièces et +</option>
+          <option>Maison</option>
+          <option>Bureaux / local commercial</option>
+          <option>Chantier / post-construction</option>
+          <option>Immeuble / parties communes</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Surface (m²)</label><input type="number" id="surface" placeholder="65"></div>
+        <div class="field"><label>Étage / accès</label><input type="text" id="etage" placeholder="3e sans asc."></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goStep2()">Continuer →</button>
+  </div>
+</div>
+
+<!-- PRESTATIONS -->
+<div class="screen" id="screen-prestations">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="go('screen-client')">← Retour</button>
+      <span class="header-title">Prestations</span>
+      <span class="step-badge">2 / 3</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">Catalogue</div>
+      <div class="presta-grid" id="presta-grid"></div>
+    </div>
+    <div class="section" id="recap-section" style="display:none">
+      <div class="section-title">Récapitulatif</div>
+      <div id="recap-lines"></div>
+      <div class="discount-row">
+        <label>Remise</label>
+        <input type="number" id="discount" min="0" max="50" value="0" placeholder="0" style="max-width:70px" oninput="renderSummary()">
+        <span style="font-size:14px;color:#555">%</span>
+      </div>
+      <div class="sum-total">
+        <span>Total TTC</span>
+        <span id="total-val">0 €</span>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Fréquence & notes</div>
+      <div class="field">
+        <label>Fréquence de passage</label>
+        <select id="frequence">
+          <option>Ponctuel</option>
+          <option>Hebdomadaire</option>
+          <option>Bi-mensuel</option>
+          <option>Mensuel</option>
+          <option>Trimestriel</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes / observations</label><textarea id="notes" placeholder="Accès clé, digicode, chien, particularités..."></textarea></div>
+    </div>
+    <button class="btn-primary" onclick="goStep3()">Continuer →</button>
+  </div>
+</div>
+
+<!-- SIGNATURE -->
+<div class="screen" id="screen-signature">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="go('screen-prestations')">← Retour</button>
+      <span class="header-title">Signature</span>
+      <span class="step-badge">3 / 3</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">Récapitulatif du devis</div>
+      <div class="recap-box" id="devis-recap"></div>
+      <div class="devis-num" id="devis-num"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Signature du client</div>
+      <p style="font-size:13px;color:#666;margin-bottom:12px">En signant, le client accepte le devis et autorise La Maison Propre à réaliser les prestations décrites.</p>
+      <div class="sig-zone" id="sig-zone">
+        <canvas class="sig-canvas" id="sig-canvas"></canvas>
+        <div class="sig-hint" id="sig-hint">Signez ici avec le doigt</div>
+      </div>
+      <button class="clear-sig-btn" onclick="clearSig()">✕ Effacer la signature</button>
+    </div>
+    <button class="btn-primary" onclick="finaliser()">Valider et envoyer →</button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="screen" id="screen-success">
+  <div class="success-wrap">
+    <div class="success-circle">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="success-title">Devis validé !</div>
+    <div class="success-msg" id="success-msg">Le devis a été enregistré.</div>
+    <div class="success-btns">
+      <button class="btn-primary" onclick="nouveauDevis()">+ Nouveau devis</button>
+      <button class="btn-secondary" onclick="go('screen-home')">Accueil</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="screen" id="screen-history">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="go('screen-home')">← Retour</button>
+      <span class="header-title">Historique</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section" id="history-list"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const PRESTATIONS = [
+  {id:'menage-std',    name:'Ménage standard',      price:25,  unit:'heure'},
+  {id:'menage-approf', name:'Ménage approfondi',    price:35,  unit:'heure'},
+  {id:'vitres-int',    name:'Vitres intérieures',   price:60,  unit:'forfait'},
+  {id:'vitres-ext',    name:'Vitres extérieures',   price:90,  unit:'forfait'},
+  {id:'facade',        name:'Nettoyage façade',      price:150, unit:'forfait'},
+  {id:'post-chantier', name:'Après-chantier',       price:200, unit:'forfait'},
+  {id:'desinfection',  name:'Désinfection',          price:90,  unit:'forfait'},
+  {id:'remise-etat',   name:'Remise en état',        price:180, unit:'forfait'},
+  {id:'communs',       name:'Parties communes',      price:80,  unit:'forfait'},
+  {id:'bureaux',       name:'Nettoyage bureaux',     price:30,  unit:'heure'},
+];
+
+let selected = {};
+let sigDrawing = false;
+let lastX = 0, lastY = 0;
+let devisCounter = parseInt(localStorage.getItem('lmp_counter')||'0');
+
+// Load history from localStorage
+function loadHistory(){
+  try { return JSON.parse(localStorage.getItem('lmp_history')||'[]'); } catch(e){ return []; }
+}
+function saveHistory(h){ localStorage.setItem('lmp_history', JSON.stringify(h)); }
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='screen-prestations') renderGrid();
+  if(id==='screen-signature') renderRecap();
+  if(id==='screen-history') renderHistory();
+  if(id==='screen-home') updateStats();
+}
+
+function updateStats(){
+  const h = loadHistory();
+  const signed = h.filter(x=>x.status==='signed');
+  const ca = signed.reduce((s,x)=>s+x.rawAmount,0);
+  document.getElementById('stat-count').textContent = h.length;
+  document.getElementById('stat-signed').textContent = signed.length;
+  document.getElementById('stat-ca').textContent = ca + '€';
+}
+
+function goStep2(){
+  const name = document.getElementById('client-name').value.trim();
+  if(!name){ alert('Veuillez saisir le nom du client.'); return; }
+  go('screen-prestations');
+}
+
+function goStep3(){
+  if(Object.keys(selected).length===0){ alert('Veuillez sélectionner au moins une prestation.'); return; }
+  go('screen-signature');
+}
+
+function renderGrid(){
+  const grid = document.getElementById('presta-grid');
+  grid.innerHTML = PRESTATIONS.map(p=>{
+    const s = selected[p.id];
+    const qty = s ? s.qty : 0;
+    const isSel = qty > 0;
+    return `<div class="presta-item${isSel?' selected':''}">
+      <div class="presta-name">${p.name}</div>
+      <div class="presta-price">${p.price}€ / ${p.unit}</div>
+      ${isSel
+        ? `<div class="qty-row">
+            <button class="qty-btn" ontouchstart="changeQty('${p.id}',-1,event)" onclick="changeQty('${p.id}',-1,event)">−</button>
+            <span class="qty-val">${qty}</span>
+            <button class="qty-btn" ontouchstart="changeQty('${p.id}',1,event)" onclick="changeQty('${p.id}',1,event)">+</button>
+           </div>`
+        : `<button class="add-btn" onclick="changeQty('${p.id}',1,event)">Ajouter</button>`
+      }
+    </div>`;
+  }).join('');
+  renderSummary();
+}
+
+function changeQty(id, delta, e){
+  if(e) e.stopPropagation();
+  if(!selected[id]) selected[id]={qty:0};
+  selected[id].qty = Math.max(0, selected[id].qty + delta);
+  if(selected[id].qty===0) delete selected[id];
+  renderGrid();
+}
+
+function renderSummary(){
+  const keys = Object.keys(selected);
+  const sec = document.getElementById('recap-section');
+  if(keys.length===0){ sec.style.display='none'; return; }
+  sec.style.display='block';
+  let subtotal = 0;
+  document.getElementById('recap-lines').innerHTML = keys.map(id=>{
+    const p = PRESTATIONS.find(x=>x.id===id);
+    const qty = selected[id].qty;
+    const line = p.price * qty;
+    subtotal += line;
+    return `<div class="sum-line"><span>${p.name} × ${qty} ${p.unit}</span><span style="font-weight:600">${line}€</span></div>`;
+  }).join('');
+  const disc = parseFloat(document.getElementById('discount').value)||0;
+  const total = Math.round(subtotal*(1-disc/100));
+  document.getElementById('total-val').textContent = total + ' €';
+}
+
+function getTotal(){
+  let subtotal = 0;
+  Object.keys(selected).forEach(id=>{
+    const p = PRESTATIONS.find(x=>x.id===id);
+    subtotal += p.price * selected[id].qty;
+  });
+  const disc = parseFloat(document.getElementById('discount').value)||0;
+  return Math.round(subtotal*(1-disc/100));
+}
+
+function renderRecap(){
+  const name    = document.getElementById('client-name').value;
+  const address = document.getElementById('client-address').value;
+  const phone   = document.getElementById('client-phone').value;
+  const freq    = document.getElementById('frequence').value;
+  const notes   = document.getElementById('notes').value;
+  const logement= document.getElementById('logement-type').value;
+  const surface = document.getElementById('surface').value;
+  const total   = getTotal();
+
+  const lines = Object.keys(selected).map(id=>{
+    const p = PRESTATIONS.find(x=>x.id===id);
+    return `<div class="recap-presta-line">• ${p.name} × ${selected[id].qty} ${p.unit} — <strong>${p.price*selected[id].qty}€</strong></div>`;
+  }).join('');
+
+  const num = 'LMP-' + new Date().getFullYear() + '-' + String(devisCounter+1).padStart(3,'0');
+  document.getElementById('devis-num').textContent = 'Référence : ' + num;
+
+  document.getElementById('devis-recap').innerHTML = `
+    <div class="recap-name">${name}</div>
+    ${address ? `<div class="recap-line">${address}</div>` : ''}
+    ${phone   ? `<div class="recap-line">${phone}</div>` : ''}
+    ${logement|| surface ? `<div class="recap-line">${[logement, surface?surface+'m²':''].filter(Boolean).join(' — ')}</div>` : ''}
+    <div class="recap-line" style="margin-top:6px;color:#888">${freq}</div>
+    <div class="recap-prestations">${lines}</div>
+    ${notes ? `<div class="recap-line" style="margin-top:6px;font-style:italic">${notes}</div>` : ''}
+    <div class="recap-total"><span>Total TTC</span><span>${total} €</span></div>`;
+
+  initSig();
+}
+
+function initSig(){
+  const zone   = document.getElementById('sig-zone');
+  const canvas = document.getElementById('sig-canvas');
+  canvas.width  = zone.clientWidth;
+  canvas.height = zone.clientHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth   = 2.5;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+
+  function pos(e){
+    const r   = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX - r.left, y: src.clientY - r.top };
+  }
+  function start(e){
+    e.preventDefault();
+    sigDrawing = true;
+    const p = pos(e);
+    lastX = p.x; lastY = p.y;
+    document.getElementById('sig-hint').style.display = 'none';
+  }
+  function draw(e){
+    e.preventDefault();
+    if(!sigDrawing) return;
+    const p = pos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    lastX = p.x; lastY = p.y;
+  }
+  function stop(){ sigDrawing = false; }
+
+  // Remove old listeners by cloning
+  const newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  newCanvas.addEventListener('mousedown',  start);
+  newCanvas.addEventListener('touchstart', start, {passive:false});
+  newCanvas.addEventListener('mousemove',  draw);
+  newCanvas.addEventListener('touchmove',  draw, {passive:false});
+  newCanvas.addEventListener('mouseup',    stop);
+  newCanvas.addEventListener('touchend',   stop);
+}
+
+function clearSig(){
+  const canvas = document.getElementById('sig-canvas');
+  if(canvas) canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('sig-hint').style.display = '';
+}
+
+function finaliser(){
+  const name  = document.getElementById('client-name').value;
+  const email = document.getElementById('client-email').value;
+  const total = getTotal();
+
+  // Save to history
+  devisCounter++;
+  localStorage.setItem('lmp_counter', devisCounter);
+  const ref = 'LMP-' + new Date().getFullYear() + '-' + String(devisCounter).padStart(3,'0');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+
+  const h = loadHistory();
+  h.unshift({ name, date: dateStr, amount: total+'€', rawAmount: total, status:'signed', ref });
+  saveHistory(h);
+
+  document.getElementById('success-msg').textContent = email
+    ? `Devis ${ref} signé. Un email de confirmation sera envoyé à ${email}.`
+    : `Devis ${ref} signé et enregistré pour ${name}.`;
+
+  go('screen-success');
+}
+
+function nouveauDevis(){
+  selected = {};
+  ['client-name','client-address','client-phone','client-email','surface','etage','notes'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  const lt = document.getElementById('logement-type');
+  if(lt) lt.selectedIndex = 0;
+  const disc = document.getElementById('discount');
+  if(disc) disc.value = '0';
+  go('screen-client');
+}
+
+function renderHistory(){
+  const h    = loadHistory();
+  const list = document.getElementById('history-list');
+  if(h.length===0){
+    list.innerHTML = '<div class="section-title">Historique</div><p style="color:#999;font-size:14px;padding:8px 0">Aucun devis pour le moment.</p>';
+    return;
+  }
+  list.innerHTML = '<div class="section-title">Devis récents</div>' + h.map(item=>`
+    <div class="hist-item">
+      <div>
+        <div class="hist-name">${item.name}</div>
+        <div class="hist-date">${item.ref ? item.ref + ' · ' : ''}${item.date}</div>
+      </div>
+      <div>
+        <div class="hist-amount">${item.amount}</div>
+        <div class="hist-status ${item.status==='signed'?'status-signed':'status-pending'}">
+          ${item.status==='signed'?'Signé':'En attente'}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// Init
+updateStats();
+</script>
+</body>
+</html>

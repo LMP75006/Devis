@@ -1,4 +1,4 @@
-const CACHE = 'lmp-v2';
+const CACHE = 'lmp-v3';
 const FILES = ['./la-maison-propre-devis.html'];
 
 self.addEventListener('install', e => {

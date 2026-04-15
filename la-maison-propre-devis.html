@@ -31,6 +31,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-p{display:block;width:100%;padding:16px;background:#000;color:#fff;border:1px solid #2f2f2f;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;text-align:center;margin-bottom:10px}
 .btn-p:active{opacity:.7}
 .btn-p.orange{border-color:#f97316;color:#f97316}
+.btn-p.red{border-color:#ef4444;color:#ef4444}
 .btn-p:disabled{opacity:.35;cursor:default}
 .btn-s{display:block;width:100%;padding:13px;background:transparent;color:#9ca3af;border:1px solid #2f2f2f;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;margin-bottom:10px}
 .field{margin-bottom:14px}
@@ -76,10 +77,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .recap-name{font-size:17px;font-weight:900;margin-bottom:4px}
 .recap-muted{font-size:13px;color:#9ca3af;margin-top:3px}
 .devis-ref{font-size:11px;color:#4b5563;margin-top:10px;font-weight:600}
-.sig-zone{height:180px;border:1px dashed #2f2f2f;border-radius:14px;background:#050505;position:relative;overflow:hidden;touch-action:none;cursor:crosshair}
-.sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#4b5563;font-size:14px;pointer-events:none;white-space:nowrap}
+
+/* Signature - fond gris clair pour voir le trait noir */
+.sig-zone{height:200px;border:1px solid #2f2f2f;border-radius:14px;background:#f0f0f0;position:relative;overflow:hidden;touch-action:none;cursor:crosshair}
+.sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#9ca3af;font-size:14px;pointer-events:none;white-space:nowrap}
 canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .clear-sig{background:none;border:none;color:#6b7280;font-size:12px;margin-top:6px;cursor:pointer;font-family:inherit;padding:4px 0}
+
+/* History */
 .hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #1f1f1f}
 .hist-item:last-child{border-bottom:none}
 .hi-name{font-size:15px;font-weight:700}
@@ -87,13 +92,29 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .hi-amount{font-size:15px;font-weight:900;color:#f97316;text-align:right}
 .hi-status{font-size:11px;font-weight:700;margin-top:3px;text-align:right}
 .status-signed{color:#22c55e}.status-pending{color:#f97316}
+
+/* Back office */
+.bo-item{background:#000;border:1px solid #2f2f2f;border-radius:14px;padding:14px;margin-bottom:10px}
+.bo-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.bo-name{font-size:15px;font-weight:900}
+.bo-amount{font-size:15px;font-weight:900;color:#f97316}
+.bo-meta{font-size:12px;color:#6b7280;margin-top:2px}
+.bo-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-top:6px}
+.bo-status.terrain{background:#1a2e1a;color:#22c55e;border:1px solid #166534}
+.bo-status.recu{background:#1a1a2e;color:#818cf8;border:1px solid #3730a3}
+.bo-status.other{background:#1f1f1f;color:#9ca3af;border:1px solid #2f2f2f}
+.bo-lines{margin-top:8px;padding-top:8px;border-top:1px solid #1f1f1f}
+.bo-line{font-size:12px;color:#9ca3af;padding:2px 0}
+
+/* Success */
 .success-wrap{text-align:center;padding:48px 20px}
 .success-circle{width:72px;height:72px;border-radius:50%;background:#052e16;border:1px solid #166534;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px}
 .sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#6b7280;padding:5px 12px;border:1px solid #1f1f1f;border-radius:999px;margin-top:8px}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0}
 .sync-dot.error{background:#ef4444}
-.sync-dot.spin{background:#f97316;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Loading */
+.loading{text-align:center;padding:32px;color:#6b7280;font-size:14px}
 </style>
 </head>
 <body>
@@ -108,7 +129,8 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   </div>
   <div class="content">
     <button class="btn-p" onclick="go('screen-client')">+ Nouveau devis</button>
-    <button class="btn-s" onclick="go('screen-history')">Historique des devis</button>
+    <button class="btn-s" onclick="go('screen-history')">Historique local</button>
+    <button class="btn-s" onclick="go('screen-backoffice')">📊 Back office</button>
     <div class="stats">
       <div class="stat"><div class="stat-val" id="stat-count">0</div><div class="stat-lbl">Devis</div></div>
       <div class="stat"><div class="stat-val" id="stat-signed">0</div><div class="stat-lbl">Signés</div></div>
@@ -130,7 +152,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
       <div class="field"><label>Prénom et nom *</label><input type="text" id="c-name" placeholder="Marie Dupont" autocomplete="off"></div>
       <div class="field"><label>Adresse du bien</label><input type="text" id="c-address" placeholder="12 rue des Lilas, Paris 75015"></div>
       <div class="field"><label>Téléphone</label><input type="tel" id="c-phone" placeholder="06 12 34 56 78"></div>
-      <div class="field"><label>Email</label><input type="email" id="c-email" placeholder="marie@email.com"></div>
+      <div class="field"><label>Email (pour recevoir le devis)</label><input type="email" id="c-email" placeholder="marie@email.com"></div>
     </div>
     <div class="card">
       <div class="card-title">Type de bien</div>
@@ -223,7 +245,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="content">
     <div class="card" id="sig-recap-mini"></div>
     <div class="card">
-      <div class="card-title">Signature</div>
+      <div class="card-title">Signature du client</div>
       <p style="font-size:13px;color:#9ca3af;margin-bottom:14px">En signant, le client accepte le devis et autorise La Maison Propre à réaliser les prestations.</p>
       <div class="sig-zone" id="sig-zone">
         <canvas class="sig-canvas" id="sig-canvas"></canvas>
@@ -231,7 +253,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
       </div>
       <button class="clear-sig" onclick="clearSig()">✕ Effacer la signature</button>
     </div>
-    <button class="btn-p orange" id="btn-finaliser" onclick="finaliser()">Valider et enregistrer →</button>
+    <button class="btn-p orange" id="btn-finaliser" onclick="finaliser()">Valider et envoyer →</button>
   </div>
 </div>
 
@@ -253,37 +275,127 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 <div class="screen" id="screen-history">
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-home')">← Retour</button>
-    <span class="hd-title">Historique</span>
+    <span class="hd-title">Historique local</span>
   </div></div>
   <div class="content">
     <div class="card" id="history-list"></div>
   </div>
 </div>
 
+<!-- BACK OFFICE -->
+<div class="screen" id="screen-backoffice">
+  <div class="hd"><div class="hd-row">
+    <button class="back-btn" onclick="go('screen-home')">← Retour</button>
+    <span class="hd-title">Back office</span>
+    <button class="back-btn" onclick="loadBackoffice()" style="margin-left:auto">↺ Actualiser</button>
+  </div></div>
+  <div class="content">
+    <div class="stats" style="margin-bottom:16px;margin-top:0">
+      <div class="stat"><div class="stat-val" id="bo-count">—</div><div class="stat-lbl">Devis</div></div>
+      <div class="stat"><div class="stat-val" id="bo-signed">—</div><div class="stat-lbl">Signés</div></div>
+      <div class="stat"><div class="stat-val" id="bo-ca">—</div><div class="stat-lbl">CA TTC</div></div>
+    </div>
+    <div id="bo-list"><div class="loading">Chargement…</div></div>
+  </div>
 </div>
-<script>
-// ── Supabase ──────────────────────────────────────────────────────────────────
-const SB_URL = 'https://etyfhmynpeldztcwvkfa.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eWZobXlucGVsZHp0Y3d2a2ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NzMwMjYsImV4cCI6MjA4MTQ0OTAyNn0.A2lmC_aDXUWXfAE8L-jifVLyKQEZ6Iz1JT_BYblWXW4';
 
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const SB_URL  = 'https://etyfhmynpeldztcwvkfa.supabase.co';
+const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eWZobXlucGVsZHp0Y3d2a2ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NzMwMjYsImV4cCI6MjA4MTQ0OTAyNn0.A2lmC_aDXUWXfAE8L-jifVLyKQEZ6Iz1JT_BYblWXW4';
+const RESEND_KEY  = 're_YheJDDY4_JNgZoBXJZVEUJkPJtN5eUVVF';
+const FROM_EMAIL  = 'contact@lamaisonpropre.fr';
+const FROM_NAME   = 'La Maison Propre';
+
+// ── Supabase ──────────────────────────────────────────────────────────────────
 async function sbInsert(table, rows) {
   const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-    body: JSON.stringify(rows)
+    body:JSON.stringify(rows)
   });
-  if (!r.ok) throw new Error(await r.text());
+  if(!r.ok) throw new Error(await r.text());
+}
+
+async function sbSelect(table, qs='') {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${qs}&order=created_at.desc`, {
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+// ── Resend email ──────────────────────────────────────────────────────────────
+async function sendEmail(to, subject, html) {
+  if(!to || !to.includes('@')) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method:'POST',
+      headers:{'Authorization':'Bearer '+RESEND_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({from:`${FROM_NAME} <${FROM_EMAIL}>`, to:[to], subject, html})
+    });
+    return r.ok;
+  } catch(e) { console.warn('Email error:',e); return false; }
+}
+
+function buildEmailHTML(devisData) {
+  const { ref, name, address, phone, email, logement, surface, freq, notes, items, totalHT, tva, totalTTC, disc } = devisData;
+  const lines = items.map(it => `
+    <tr>
+      <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#e5e7eb">${it.label}${it.isHaussmann?' (+20%)':''}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#9ca3af;text-align:center">${it.qty} ${it.unit}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#9ca3af;text-align:right">${fmt(it.priceHT)} HT</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#f97316;text-align:right;font-weight:700">${fmt(it.totalHT)} HT</td>
+    </tr>`).join('');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="background:#000;color:#fff;font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:20px">
+    <div style="background:#050505;border:1px solid #2f2f2f;border-radius:18px;overflow:hidden">
+      <div style="background:#000;padding:24px 24px 20px;border-bottom:1px solid #1f1f1f">
+        <div style="font-size:11px;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">S.A.R.L.</div>
+        <div style="font-size:24px;font-weight:900">La Maison Propre</div>
+        <div style="font-size:13px;color:#6b7280;margin-top:4px">Votre devis — Réf. ${ref}</div>
+      </div>
+      <div style="padding:20px 24px">
+        <div style="margin-bottom:16px">
+          <div style="font-size:16px;font-weight:900">${name}</div>
+          ${address?`<div style="font-size:13px;color:#9ca3af;margin-top:3px">${address}</div>`:''}
+          ${logement?`<div style="font-size:13px;color:#9ca3af;margin-top:3px">${logement}${surface?' • '+surface+' m²':''}</div>`:''}
+          <div style="font-size:13px;color:#9ca3af;margin-top:3px">${freq}</div>
+          ${notes?`<div style="font-size:13px;color:#9ca3af;margin-top:6px;font-style:italic">${notes}</div>`:''}
+        </div>
+        <table style="width:100%;border-collapse:collapse;border:1px solid #2f2f2f;border-radius:12px;overflow:hidden">
+          <thead><tr style="background:#000">
+            <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Prestation</th>
+            <th style="padding:10px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Qté</th>
+            <th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">PU HT</th>
+            <th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Total HT</th>
+          </tr></thead>
+          <tbody>${lines}</tbody>
+        </table>
+        <div style="background:#000;border:1px solid #2f2f2f;border-radius:12px;padding:14px;margin-top:14px">
+          ${disc>0?`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">Remise ${disc}%</span><span style="color:#22c55e">−${fmt(devisData.subtotal - totalHT)}</span></div>`:''}
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">Total HT</span><span style="color:#fff;font-weight:700">${fmt(totalHT)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">TVA (20%)</span><span style="color:#fff;font-weight:700">${fmt(tva)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:6px;border-top:1px solid #2f2f2f;font-size:18px;font-weight:900"><span style="color:#fff">Total TTC</span><span style="color:#f97316">${fmt(totalTTC)}</span></div>
+        </div>
+        <div style="margin-top:20px;padding:16px;background:#050505;border:1px solid #2f2f2f;border-radius:12px;font-size:13px;color:#9ca3af">
+          Ce devis a été signé électroniquement sur site. Pour toute question : <a href="mailto:contact@lamaisonpropre.fr" style="color:#f97316">contact@lamaisonpropre.fr</a> • 01 53 63 01 77
+        </div>
+      </div>
+    </div>
+  </body></html>`;
 }
 
 // ── Catalogue ─────────────────────────────────────────────────────────────────
-const VAT = 0.20, HAUS = 1.2;
-const FAMILIES = [{key:'tissus',label:'🧵 Tissus'},{key:'vitrerie',label:'🪟 Vitrerie'},{key:'menage',label:'🧹 Ménage'}];
-const SERVICES = {
+const VAT=0.20, HAUS=1.2;
+const FAMILIES=[{key:'tissus',label:'🧵 Tissus'},{key:'vitrerie',label:'🪟 Vitrerie'},{key:'menage',label:'🧹 Ménage'}];
+const SERVICES={
   tissus:[
-    {key:'tapis',   label:'🧼 Tapis',   unit:'m²',        priceHT:40},
-    {key:'moquette',label:'🧽 Moquette',unit:'m²',        priceHT:15},
-    {key:'rideaux', label:'🪟 Rideaux', unit:'m²',        priceHT:16},
-    {key:'canape',  label:'🛋️ Canapé',  unit:'place(s)',  priceHT:130},
+    {key:'tapis',   label:'🧼 Tapis',   unit:'m²',       priceHT:40},
+    {key:'moquette',label:'🧽 Moquette',unit:'m²',       priceHT:15},
+    {key:'rideaux', label:'🪟 Rideaux', unit:'m²',       priceHT:16},
+    {key:'canape',  label:'🛋️ Canapé',  unit:'place(s)', priceHT:130},
   ],
   vitrerie:[
     {key:'fenetres',label:'🪟 Fenêtres',unit:'fenêtre(s)',priceHT:20},
@@ -295,16 +407,13 @@ const HEIGHTS=[{key:'normal',label:'Normale (2,5m)',val:2.5},{key:'haussmann',la
 const LTYPES=['Studio','2 pièces','3 pièces','4 pièces et +','Maison','Bureaux / local','Post-construction','Parties communes'];
 
 // ── État ──────────────────────────────────────────────────────────────────────
-let CF='tissus', CS='tapis', CH='normal', SL='', items=[];
-let sigDrawing=false, lastX=0, lastY=0;
+let CF='tissus',CS='tapis',CH='normal',SL='',items=[];
+let sigDrawing=false,lastX=0,lastY=0;
 let devisCounter=parseInt(localStorage.getItem('lmp_counter')||'0');
 function genRef(){return 'LMP-'+new Date().getFullYear()+'-'+String(devisCounter+1).padStart(3,'0');}
 let currentRef=genRef();
 
-function fmt(n){
-  n=typeof n==='number'?n:parseFloat(n)||0;
-  return new Intl.NumberFormat('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' €';
-}
+function fmt(n){n=typeof n==='number'?n:parseFloat(n)||0;return new Intl.NumberFormat('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' €';}
 function pn(v){if(!v)return 0;const c=v.toString().replace(',','.').replace(/[^0-9.]/g,'');const n=parseFloat(c);return isNaN(n)?0:n;}
 function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16);});}
 
@@ -318,6 +427,7 @@ function go(id){
   if(id==='screen-recap')renderRecap();
   if(id==='screen-signature')initSig();
   if(id==='screen-history')renderHistory();
+  if(id==='screen-backoffice')loadBackoffice();
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
@@ -331,18 +441,11 @@ function updateStats(){
   document.getElementById('stat-ca').textContent=Math.round(ca)+'€';
 }
 
-// ── Steps ─────────────────────────────────────────────────────────────────────
-function goStep2(){
-  if(!document.getElementById('c-name').value.trim()){alert('Veuillez saisir le nom du client.');return;}
-  go('screen-prestations');
-}
-function goStep3(){
-  if(!items.length){alert('Ajoutez au moins une prestation.');return;}
-  go('screen-recap');
-}
+function goStep2(){if(!document.getElementById('c-name').value.trim()){alert('Veuillez saisir le nom du client.');return;}go('screen-prestations');}
+function goStep3(){if(!items.length){alert('Ajoutez au moins une prestation.');return;}go('screen-recap');}
 
-// ── Type pills init ───────────────────────────────────────────────────────────
-(function initTypePills(){
+// ── Type pills ────────────────────────────────────────────────────────────────
+(function(){
   const tg=document.getElementById('type-grid');
   LTYPES.forEach(t=>{
     const b=document.createElement('button');
@@ -354,13 +457,9 @@ function goStep3(){
 
 // ── Catalogue ─────────────────────────────────────────────────────────────────
 function getSvc(){return(SERVICES[CF]||[]).find(s=>s.key===CS);}
-function getPrice(){
-  const svc=getSvc();if(!svc)return 0;
-  return(CF==='vitrerie'&&CH==='haussmann')?svc.priceHT*HAUS:svc.priceHT;
-}
+function getPrice(){const svc=getSvc();if(!svc)return 0;return(CF==='vitrerie'&&CH==='haussmann')?svc.priceHT*HAUS:svc.priceHT;}
 
 function renderCatalogue(){
-  // Familles
   const fr=document.getElementById('family-row');fr.innerHTML='';
   FAMILIES.forEach(f=>{
     const b=document.createElement('button');
@@ -368,7 +467,6 @@ function renderCatalogue(){
     b.onclick=()=>{CF=f.key;CS=(SERVICES[f.key]||[])[0]?.key||'';CH='normal';renderCatalogue();};
     fr.appendChild(b);
   });
-  // Services
   const sg=document.getElementById('svc-grid');sg.innerHTML='';
   (SERVICES[CF]||[]).forEach(sv=>{
     const b=document.createElement('div');
@@ -377,7 +475,6 @@ function renderCatalogue(){
     b.onclick=()=>{CS=sv.key;renderCatalogue();};
     sg.appendChild(b);
   });
-  // Hauteur
   const hc=document.getElementById('hauteur-card'),hg=document.getElementById('height-grid');
   if(CF==='vitrerie'){
     hc.style.display='';hg.innerHTML='';
@@ -389,7 +486,6 @@ function renderCatalogue(){
     });
     document.getElementById('height-other-field').style.display=CH==='other'?'':'none';
   }else{hc.style.display='none';CH='normal';}
-  // Qty title
   const svc=getSvc();
   document.getElementById('qty-title').textContent=`Quantité (${svc?svc.unit:''})`;
   updateMiniSum();
@@ -399,13 +495,13 @@ document.getElementById('qty-input').addEventListener('input',updateMiniSum);
 
 function updateMiniSum(){
   const qty=pn(document.getElementById('qty-input').value);
-  const svc=getSvc();const price=getPrice();const total=qty*price;
+  const svc=getSvc();const price=getPrice();
   const ms=document.getElementById('mini-sum');
   if(qty>0&&svc){
     ms.style.display='flex';
     const h=(CF==='vitrerie'&&CH==='haussmann')?' (+20% Haussmann)':'';
     document.getElementById('mini-sum-txt').textContent=`${fmt(price)} × ${qty} ${svc.unit}${h}`;
-    document.getElementById('mini-sum-val').textContent=fmt(total)+' HT';
+    document.getElementById('mini-sum-val').textContent=fmt(qty*price)+' HT';
   }else ms.style.display='none';
 }
 
@@ -420,11 +516,7 @@ function addItem(){
   const isH=CF==='vitrerie'&&CH==='haussmann';
   const hPreset=HEIGHTS.find(h=>h.key===CH);
   const hVal=CH==='other'?pn(document.getElementById('height-other-input').value):(hPreset?.val||null);
-  items.push({
-    id:uuid(),familyKey:CF,serviceKey:svc.key,label:svc.label,unit:svc.unit,qty,
-    priceHT:price,totalHT:qty*price,isHaussmann:isH,heightMeters:hVal,
-    meta:{effective_price_ht:price,...(CF==='vitrerie'?{heightPreset:CH,heightMeters:hVal,haussmannMultiplierApplied:isH?HAUS:1}:{})}
-  });
+  items.push({id:uuid(),familyKey:CF,serviceKey:svc.key,label:svc.label,unit:svc.unit,qty,priceHT:price,totalHT:qty*price,isHaussmann:isH,heightMeters:hVal,meta:{effective_price_ht:price,...(CF==='vitrerie'?{heightPreset:CH,heightMeters:hVal,haussmannMultiplierApplied:isH?HAUS:1}:{})}});
   document.getElementById('qty-input').value='';
   document.getElementById('mini-sum').style.display='none';
   renderItemsList();
@@ -438,16 +530,7 @@ function renderItemsList(){
   card.style.display='';
   list.innerHTML=items.map(it=>{
     const h=it.isHaussmann?'<span style="color:#f97316;font-size:11px;margin-left:4px">+20%</span>':'';
-    return`<div class="item-line">
-      <div class="il-left">
-        <div class="il-name">${it.label}${h}</div>
-        <div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div>
-      </div>
-      <div class="il-right">
-        <div class="il-total">${fmt(it.totalHT)} HT</div>
-        <span class="il-del" onclick="removeItem('${it.id}')">🗑️</span>
-      </div>
-    </div>`;
+    return`<div class="item-line"><div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-right"><div class="il-total">${fmt(it.totalHT)} HT</div><span class="il-del" onclick="removeItem('${it.id}')">🗑️</span></div></div>`;
   }).join('');
   renderTotals();
 }
@@ -493,13 +576,7 @@ function renderRecap(){
     <div class="devis-ref">Réf. ${currentRef}</div>`;
   document.getElementById('recap-items-card').innerHTML=`
     <div class="card-title">Prestations</div>
-    ${items.map(it=>{
-      const h=it.isHaussmann?'<span style="color:#f97316;font-size:11px;margin-left:4px">+20%</span>':'';
-      return`<div class="item-line">
-        <div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div>
-        <div class="il-total">${fmt(it.totalHT)} HT</div>
-      </div>`;
-    }).join('')}
+    ${items.map(it=>{const h=it.isHaussmann?'<span style="color:#f97316;font-size:11px;margin-left:4px">+20%</span>':'';return`<div class="item-line"><div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-total">${fmt(it.totalHT)} HT</div></div>`;}).join('')}
     <div class="totals-box" style="margin-top:14px">
       ${disc>0?`<div class="tot-row green"><span class="tot-lbl">Remise ${disc}%</span><span class="tot-val">−${fmt(subtotal-totalHT)}</span></div>`:''}
       <div class="tot-row"><span class="tot-lbl">Total HT</span><span class="tot-val">${fmt(totalHT)}</span></div>
@@ -515,27 +592,54 @@ function initSig(){
   document.getElementById('sig-recap-mini').innerHTML=`
     <div class="card-title">Devis ${currentRef}</div>
     <div class="recap-name">${name}</div>
-    <div class="tot-row final" style="margin-top:10px">
-      <span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span>
-    </div>`;
+    <div class="tot-row final" style="margin-top:10px"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>`;
   const zone=document.getElementById('sig-zone');
   const canvas=document.getElementById('sig-canvas');
-  canvas.width=zone.clientWidth;canvas.height=zone.clientHeight;
+  canvas.width=zone.clientWidth;
+  canvas.height=zone.clientHeight;
   const ctx=canvas.getContext('2d');
-  ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+  // Fond blanc pour voir la signature noire
+  ctx.fillStyle='#f0f0f0';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#111111';
+  ctx.lineWidth=2.5;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+
   function pos(e){const r=canvas.getBoundingClientRect();const src=e.touches?e.touches[0]:e;return{x:src.clientX-r.left,y:src.clientY-r.top};}
   function start(e){e.preventDefault();sigDrawing=true;const p=pos(e);lastX=p.x;lastY=p.y;document.getElementById('sig-hint').style.display='none';}
   function draw(e){e.preventDefault();if(!sigDrawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y;}
   function stop(){sigDrawing=false;}
-  const nc=canvas.cloneNode(true);canvas.parentNode.replaceChild(nc,canvas);
-  nc.addEventListener('mousedown',start);nc.addEventListener('touchstart',start,{passive:false});
-  nc.addEventListener('mousemove',draw);nc.addEventListener('touchmove',draw,{passive:false});
-  nc.addEventListener('mouseup',stop);nc.addEventListener('touchend',stop);
+
+  const nc=canvas.cloneNode(false);
+  canvas.parentNode.replaceChild(nc,canvas);
+  // Redraw background on new canvas
+  const nc2=document.getElementById('sig-canvas')||nc;
+  const ctx2=nc.getContext('2d');
+  ctx2.fillStyle='#f0f0f0';
+  ctx2.fillRect(0,0,nc.width,nc.height);
+  ctx2.strokeStyle='#111111';
+  ctx2.lineWidth=2.5;ctx2.lineCap='round';ctx2.lineJoin='round';
+
+  function pos2(e){const r=nc.getBoundingClientRect();const src=e.touches?e.touches[0]:e;return{x:src.clientX-r.left,y:src.clientY-r.top};}
+  function start2(e){e.preventDefault();sigDrawing=true;const p=pos2(e);lastX=p.x;lastY=p.y;document.getElementById('sig-hint').style.display='none';}
+  function draw2(e){e.preventDefault();if(!sigDrawing)return;const p=pos2(e);ctx2.beginPath();ctx2.moveTo(lastX,lastY);ctx2.lineTo(p.x,p.y);ctx2.stroke();lastX=p.x;lastY=p.y;}
+  function stop2(){sigDrawing=false;}
+
+  nc.addEventListener('mousedown',start2);
+  nc.addEventListener('touchstart',start2,{passive:false});
+  nc.addEventListener('mousemove',draw2);
+  nc.addEventListener('touchmove',draw2,{passive:false});
+  nc.addEventListener('mouseup',stop2);
+  nc.addEventListener('touchend',stop2);
 }
 
 function clearSig(){
   const c=document.getElementById('sig-canvas');
-  if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#f0f0f0';
+  ctx.fillRect(0,0,c.width,c.height);
   document.getElementById('sig-hint').style.display='';
 }
 
@@ -543,17 +647,25 @@ function clearSig(){
 async function finaliser(){
   const btn=document.getElementById('btn-finaliser');
   btn.disabled=true;btn.textContent='Enregistrement…';
-  const name=document.getElementById('c-name').value;
-  const email=document.getElementById('c-email').value;
-  const{totalHT,tva,totalTTC}=getTotals();
+
+  const name   = document.getElementById('c-name').value;
+  const email  = document.getElementById('c-email').value;
+  const addr   = document.getElementById('c-address').value;
+  const phone  = document.getElementById('c-phone').value;
+  const freq   = document.getElementById('frequence').value;
+  const notes  = document.getElementById('notes').value;
+  const surf   = document.getElementById('c-surface').value;
+  const {subtotal,disc,totalHT,tva,totalTTC}=getTotals();
   const quoteId=uuid();
-  // Local
+
+  // Local save
   devisCounter++;
   localStorage.setItem('lmp_counter',devisCounter);
   const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
   const h=lh();
   h.unshift({name,date:dateStr,amount:Math.round(totalTTC)+'€',totalTTC,status:'signed',ref:currentRef});
   sh(h);
+
   // Supabase
   let syncOk=false;
   try{
@@ -562,11 +674,26 @@ async function finaliser(){
     if(dbItems.length)await sbInsert('quote_items',dbItems);
     syncOk=true;
   }catch(e){console.warn('Supabase:',e);}
-  document.getElementById('success-msg').textContent=email?`Devis ${currentRef} signé pour ${name}.`:`Devis ${currentRef} signé pour ${name}.`;
-  document.getElementById('sync-result').innerHTML=syncOk
-    ?`<span class="sync-badge"><span class="sync-dot"></span>Synchronisé sur tous les appareils</span>`
-    :`<span class="sync-badge"><span class="sync-dot error"></span>Sauvegardé localement (sync à venir)</span>`;
-  btn.disabled=false;btn.textContent='Valider et enregistrer →';
+
+  // Email client
+  let emailOk=false;
+  if(email){
+    const html=buildEmailHTML({ref:currentRef,name,address:addr,phone,email,logement:SL,surface:surf,freq,notes,items,subtotal,disc,totalHT,tva,totalTTC});
+    emailOk=await sendEmail(email,`Votre devis La Maison Propre — Réf. ${currentRef}`,html);
+  }
+
+  // Email interne (copie à La Maison Propre)
+  const htmlInternal=buildEmailHTML({ref:currentRef,name,address:addr,phone,email,logement:SL,surface:surf,freq,notes,items,subtotal,disc,totalHT,tva,totalTTC});
+  await sendEmail(FROM_EMAIL,`[Terrain] Nouveau devis signé — ${name} — ${currentRef}`,htmlInternal);
+
+  document.getElementById('success-msg').textContent=`Devis ${currentRef} signé pour ${name}.`;
+  const badges=[];
+  if(syncOk)badges.push(`<span class="sync-badge"><span class="sync-dot"></span>Synchronisé Supabase</span>`);
+  else badges.push(`<span class="sync-badge"><span class="sync-dot error"></span>Sauvegardé localement</span>`);
+  if(email)badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${emailOk?'#22c55e':'#f97316'}"></span>${emailOk?'Email envoyé au client':'Email non envoyé'}</span>`);
+  document.getElementById('sync-result').innerHTML=badges.join(' ');
+
+  btn.disabled=false;btn.textContent='Valider et envoyer →';
   go('screen-success');
 }
 
@@ -581,7 +708,7 @@ function nouveauDevis(){
   go('screen-client');
 }
 
-// ── Historique ────────────────────────────────────────────────────────────────
+// ── Historique local ──────────────────────────────────────────────────────────
 function renderHistory(){
   const h=lh(),list=document.getElementById('history-list');
   if(!h.length){list.innerHTML='<div class="card-title">Historique</div><p style="color:#6b7280;font-size:14px;padding:8px 0">Aucun devis pour le moment.</p>';return;}
@@ -590,6 +717,51 @@ function renderHistory(){
       <div><div class="hi-name">${item.name}</div><div class="hi-meta">${item.ref?item.ref+' · ':''}${item.date}</div></div>
       <div><div class="hi-amount">${item.amount}</div><div class="hi-status ${item.status==='signed'?'status-signed':'status-pending'}">${item.status==='signed'?'Signé':'En attente'}</div></div>
     </div>`).join('');
+}
+
+// ── Back office ───────────────────────────────────────────────────────────────
+async function loadBackoffice(){
+  const list=document.getElementById('bo-list');
+  list.innerHTML='<div class="loading">Chargement…</div>';
+  try{
+    const quotes=await sbSelect('quotes','select=*');
+    const ids=quotes.map(q=>q.id);
+    let itemsByQuote={};
+    if(ids.length){
+      const qItems=await sbSelect('quote_items',`quote_id=in.(${ids.join(',')})&select=*`);
+      qItems.forEach(it=>{
+        if(!itemsByQuote[it.quote_id])itemsByQuote[it.quote_id]=[];
+        itemsByQuote[it.quote_id].push(it);
+      });
+    }
+    // Stats
+    const signed=quotes.filter(q=>q.pro_status==='terrain_signé'||q.pro_status==='confirmé');
+    const ca=signed.reduce((s,q)=>s+(q.total_ttc||0),0);
+    document.getElementById('bo-count').textContent=quotes.length;
+    document.getElementById('bo-signed').textContent=signed.length;
+    document.getElementById('bo-ca').textContent=Math.round(ca)+'€';
+
+    if(!quotes.length){list.innerHTML='<div class="loading">Aucun devis dans Supabase.</div>';return;}
+
+    list.innerHTML=quotes.map(q=>{
+      const qItems=itemsByQuote[q.id]||[];
+      const statusCls=q.pro_status==='terrain_signé'?'terrain':q.pro_status==='reçu'?'recu':'other';
+      const statusLabel=q.pro_status==='terrain_signé'?'✓ Terrain signé':q.pro_status==='reçu'?'Reçu':q.pro_status||'—';
+      const dateStr=q.created_at?new Date(q.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'—';
+      const linesHTML=qItems.slice(0,3).map(it=>`<div class="bo-line">• ${it.label} — ${it.qty} ${it.unit} — ${fmt(it.total_ht)} HT</div>`).join('');
+      return`<div class="bo-item">
+        <div class="bo-header">
+          <div><div class="bo-name">${q.client_name||'—'}</div><div class="bo-meta">${dateStr}</div></div>
+          <div style="text-align:right"><div class="bo-amount">${fmt(q.total_ttc||0)} TTC</div><div style="font-size:12px;color:#9ca3af">${fmt(q.total_ht||0)} HT</div></div>
+        </div>
+        <span class="bo-status ${statusCls}">${statusLabel}</span>
+        ${qItems.length?`<div class="bo-lines">${linesHTML}${qItems.length>3?`<div class="bo-line" style="color:#6b7280">+ ${qItems.length-3} autre(s)</div>`:''}</div>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('Backoffice error:',e);
+    list.innerHTML='<div class="loading" style="color:#ef4444">Erreur de connexion Supabase.</div>';
+  }
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────

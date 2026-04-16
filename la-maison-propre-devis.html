@@ -244,13 +244,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
     </div>
     <button class="btn-p" id="btn-new-devis" style="display:none" onclick="go('screen-type')">+ Nouveau devis</button>
     <button class="btn-s" id="btn-dashboard" style="display:none" onclick="go('screen-dashboard')">📊 Tableau de bord</button>
-    <button class="btn-s" id="btn-history" style="display:none" onclick="go('screen-history')">Historique local</button>
     <button class="btn-s" id="btn-bo" style="display:none" onclick="go('screen-backoffice')">🗂 Back office</button>
-    <div class="stats" id="stats-block" style="display:none">
-      <div class="stat"><div class="stat-val" id="stat-count">0</div><div class="stat-lbl">Devis</div></div>
-      <div class="stat"><div class="stat-val" id="stat-signed">0</div><div class="stat-lbl">Signés</div></div>
-      <div class="stat"><div class="stat-val" id="stat-ca">0€</div><div class="stat-lbl">CA TTC</div></div>
-    </div>
     <div id="offline-banner" style="display:none;margin-top:12px;background:#1a0a00;border:1px solid #f59e0b;border-radius:12px;padding:10px 14px;font-size:13px;color:#fbbf24">
       📡 Mode hors ligne — <span id="offline-count">0</span> devis en attente de synchronisation
     </div>
@@ -920,10 +914,10 @@ function selectCompany(key) {
   document.getElementById('home-title').textContent = co.name;
   document.getElementById('home-sub').textContent = 'Application Vasco';
   // Afficher boutons
-  ['btn-new-devis', 'btn-dashboard', 'btn-history', 'btn-bo', 'stats-block'].forEach(id => {
-    document.getElementById(id).style.display = '';
+  ['btn-new-devis', 'btn-dashboard', 'btn-bo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
   });
-  updateStats();
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
@@ -1291,30 +1285,28 @@ async function finaliser() {
   const { subtotal, disc, totalHT, tva, totalTTC } = isCustom ? getCustomTotals() : getTotals();
   const quoteId = uuid();
 
-  // Local
+  // Incrémenter le compteur de référence uniquement
   devisCounter++; localStorage.setItem('lmp_counter', devisCounter);
-  const dateStr = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
-  const h = lh();
-  h.unshift({ name, date: dateStr, amount: Math.round(totalTTC) + '€', totalTTC, status: 'signed', ref: currentRef, type: isCustom ? 'custom' : 'classic', company: currentCompany });
-  sh(h);
 
-  // Supabase — avec fallback hors ligne
+  // ── Supabase — toujours en priorité, local uniquement si échec ───────────
   let syncOk = false;
   const quoteRow = { id: quoteId, client_name: name, client_email: email, client_phone: phone, client_address: addr, total_ht: totalHT, tva, total_ttc: totalTTC, pro_status: 'terrain_signé' };
   const dbItems = allItems.map(it => ({ id: uuid(), quote_id: quoteId, famille_key: it.familyKey, service_key: it.serviceKey, label: it.label, qty: it.qty, unit: it.unit, price_ht: it.priceHT, total_ht: it.totalHT, photo_url: null, meta: it.meta || null }));
-  if (navigator.onLine) {
-    try {
-      await sbInsert('quotes', [quoteRow]);
-      if (dbItems.length) await sbInsert('quote_items', dbItems);
-      syncOk = true;
-      // Notifier toute l'équipe
-      sendPushNotification(`Vasco — Nouveau devis signé`, `${name} • ${fmt(totalTTC)} TTC • ${currentRef}`);
-    } catch (e) {
-      console.warn('Supabase:', e);
-      addToOfflineQueue(quoteRow, dbItems);
-    }
-  } else {
+
+  try {
+    await sbInsert('quotes', [quoteRow]);
+    if (dbItems.length) await sbInsert('quote_items', dbItems);
+    syncOk = true;
+    sendPushNotification(`Vasco — Nouveau devis signé`, `${name} • ${fmt(totalTTC)} TTC • ${currentRef}`);
+  } catch (e) {
+    // Supabase inaccessible → file d'attente locale
+    console.warn('Supabase indisponible, mise en file hors ligne:', e.message);
     addToOfflineQueue(quoteRow, dbItems);
+    // Sauvegarder en local uniquement dans ce cas
+    const dateStr = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    const h = lh();
+    h.unshift({ name, date: dateStr, amount: Math.round(totalTTC) + '€', totalTTC, status: 'signed', ref: currentRef, type: isCustom ? 'custom' : 'classic', company: currentCompany });
+    sh(h);
   }
 
   // Email via proxy Vercel
@@ -1340,7 +1332,7 @@ async function finaliser() {
 
   document.getElementById('success-msg').textContent = `Devis ${currentRef} signé pour ${name}.`;
   const badges = [];
-  const offlineCount = getOfflineQueue().length;
+  const offlineCount = Math.max(0, getOfflineQueue().length);
   badges.push(`<span class="sync-badge"><span class="sync-dot ${syncOk ? '' : 'error'}"></span>${syncOk ? 'Synchronisé ✓' : `Hors ligne — ${offlineCount} en attente`}</span>`);
   if (email) badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${emailOk ? '#22c55e' : '#f97316'}"></span>${emailOk ? 'Email envoyé' : 'Email en attente'}</span>`);
   badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${axonautOk ? '#22c55e' : '#f97316'}"></span>${axonautOk ? 'Axonaut ✓' : 'Axonaut en attente'}</span>`);
@@ -1485,7 +1477,8 @@ function updateOfflineBanner() {
   const banner = document.getElementById('offline-banner');
   const count = document.getElementById('offline-count');
   if (!banner) return;
-  if (q.length > 0) { banner.style.display = ''; if(count) count.textContent = q.length; }
+  const n = Math.max(0, q.length);
+  if (n > 0) { banner.style.display = ''; if (count) count.textContent = n; }
   else banner.style.display = 'none';
 }
 

@@ -566,7 +566,6 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
     <button class="back-btn" onclick="loadBackoffice()" style="margin-left:auto">↺</button>
   </div></div>
   <div class="content">
-    <!-- Filtres -->
     <div class="card">
       <div class="card-title">Filtres</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
@@ -597,6 +596,86 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
       <div class="stat"><div class="stat-val" id="bo-ca">—</div><div class="stat-lbl">CA TTC</div></div>
     </div>
     <div id="bo-list"><div class="loading">Chargement…</div></div>
+  </div>
+</div>
+
+<!-- ÉDITION DEVIS -->
+<div class="screen" id="screen-edit">
+  <div class="hd"><div class="hd-row">
+    <button class="back-btn" onclick="go('screen-backoffice')">← Retour</button>
+    <span class="hd-title" id="edit-title">Modifier le devis</span>
+  </div></div>
+  <div class="content">
+    <!-- Client -->
+    <div class="card">
+      <div class="card-title">Client</div>
+      <div class="field"><label>Prénom et nom</label><input type="text" id="edit-name" placeholder="Marie Dupont"></div>
+      <div class="field"><label>Email</label><input type="email" id="edit-email" placeholder="marie@email.com"></div>
+      <div class="field"><label>Téléphone</label><input type="tel" id="edit-phone" placeholder="06 12 34 56 78"></div>
+      <div class="field"><label>Adresse</label><input type="text" id="edit-address" placeholder="12 rue des Lilas, 75006 Paris"></div>
+    </div>
+    <!-- Prestations -->
+    <div class="card">
+      <div class="card-title">Prestations</div>
+      <div id="edit-items-list"></div>
+      <!-- Ajouter une ligne -->
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1f1f1f">
+        <div class="card-title">Ajouter une prestation</div>
+        <div class="field"><label>Description</label><input type="text" id="edit-new-label" placeholder="Ex: Ménage"></div>
+        <div class="row-2">
+          <div class="field"><label>Prix HT (€)</label><input type="number" id="edit-new-price" placeholder="60" min="0" step="0.01"></div>
+          <div class="field"><label>Quantité</label><input type="number" id="edit-new-qty" placeholder="1" min="0" step="0.5"></div>
+        </div>
+        <div class="field"><label>Unité</label><input type="text" id="edit-new-unit" placeholder="h, m², pièce..."></div>
+        <button class="btn-s" onclick="editAddItem()">+ Ajouter la ligne</button>
+      </div>
+      <!-- Remise -->
+      <div class="disc-row" style="margin-top:8px">
+        <label>Remise</label>
+        <input type="number" id="edit-discount" min="0" max="50" value="0" placeholder="0" oninput="renderEditTotals()">
+        <span style="font-size:13px;color:#9ca3af">%</span>
+      </div>
+      <div class="totals-box" id="edit-totals-box"></div>
+    </div>
+    <!-- Signature différée -->
+    <div class="card">
+      <div class="card-title">Signature</div>
+      <button class="btn-p orange" onclick="editSignOnSite()">✍️ Signer sur place</button>
+      <button class="btn-s" onclick="editSendSignatureLink()">📧 Envoyer lien de signature au client</button>
+      <div id="edit-sig-link" style="display:none;margin-top:10px;padding:12px;background:#0a0a0a;border-radius:12px;border:1px solid #2f2f2f">
+        <div style="font-size:12px;color:#9ca3af;margin-bottom:6px">Lien de signature envoyé au client</div>
+        <a id="edit-sig-link-url" href="#" target="_blank" style="font-size:13px;color:#f97316;word-break:break-all"></a>
+      </div>
+    </div>
+    <button class="btn-p" id="edit-save-btn" onclick="saveEdit()">💾 Enregistrer les modifications</button>
+  </div>
+</div>
+
+<!-- SIGNATURE SUR PLACE (depuis back office) -->
+<div class="screen" id="screen-edit-sig">
+  <div class="hd"><div class="hd-row">
+    <button class="back-btn" onclick="go('screen-edit')">← Retour</button>
+    <span class="hd-title">Signature client</span>
+  </div></div>
+  <div class="content">
+    <div class="card" id="edit-sig-recap"></div>
+    <div class="card">
+      <div class="card-title">Conditions générales</div>
+      <div id="edit-cgv-text" style="font-size:12px;color:#9ca3af;line-height:1.6;max-height:140px;overflow-y:auto;margin-bottom:14px;padding:10px;background:#000;border-radius:10px;border:1px solid #2f2f2f"></div>
+      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px;background:#0a0a0a;border-radius:12px;border:1px solid #2f2f2f">
+        <input type="checkbox" id="edit-cgv-check" onchange="onEditCgvChange()" style="width:20px;height:20px;margin-top:2px;accent-color:#f97316;flex-shrink:0">
+        <span style="font-size:13px;color:#e5e7eb;line-height:1.5">J'ai lu et j'accepte les conditions générales de vente.</span>
+      </label>
+    </div>
+    <div class="card" id="edit-sig-card" style="display:none">
+      <div class="card-title">Signature</div>
+      <div class="sig-zone" id="edit-sig-zone">
+        <canvas class="sig-canvas" id="edit-sig-canvas"></canvas>
+        <span class="sig-hint" id="edit-sig-hint">Signez ici avec le doigt</span>
+      </div>
+      <button class="clear-sig" onclick="clearEditSig()">✕ Effacer</button>
+    </div>
+    <button class="btn-p orange" id="edit-sig-validate-btn" style="display:none" onclick="validateEditSig()">Valider la signature →</button>
   </div>
 </div>
 
@@ -859,6 +938,7 @@ function go(id) {
   if (id === 'screen-history') renderHistory();
   if (id === 'screen-backoffice') loadBackoffice();
   if (id === 'screen-dashboard') loadDashboard();
+  if (id === 'screen-edit') renderEditItems();
 }
 
 function selectType(t) { quoteType = t; go('screen-client'); }
@@ -1236,8 +1316,10 @@ async function finaliser() {
   }
 
   // Email via proxy Vercel
+  const etage = document.getElementById('c-etage').value;
+  const ascenseur = document.getElementById('c-ascenseur').value;
   const dateIntervention = document.getElementById('c-date-intervention').value;
-  const emailData = { ref: currentRef, quoteType, company: currentCompany, name, address: addr, phone, email, superficie, logement: SL, subject: SS, freq, notes, items: allItems, subtotal, disc, totalHT, tva, totalTTC, dateIntervention, photosCount: photos.length };
+  const emailData = { ref: currentRef, quoteType, company: currentCompany, name, address: addr, phone, email, superficie, etage, ascenseur, logement: SL, subject: SS, freq, notes, items: allItems, subtotal, disc, totalHT, tva, totalTTC, dateIntervention, photosCount: photos.length };
   const html = buildEmailHTML(emailData);
   let emailOk = false;
   let axonautOk = false;
@@ -1333,7 +1415,19 @@ function applyFilters() {
     const sl = q.pro_status === 'terrain_signé' ? '✓ Terrain signé' : q.pro_status === 'reçu' ? 'Reçu' : q.pro_status || '—';
     const ds = q.created_at ? new Date(q.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
     const lh2 = qItems.slice(0, 3).map(it => `<div class="bo-line">• ${it.label} — ${it.qty} ${it.unit} — ${fmt(it.total_ht)} HT</div>`).join('');
-    return `<div class="bo-item"><div class="bo-header"><div><div class="bo-name">${q.client_name || '—'}</div><div class="bo-meta">${ds}</div></div><div style="text-align:right"><div class="bo-amount">${fmt(q.total_ttc || 0)} TTC</div><div style="font-size:12px;color:#9ca3af">${fmt(q.total_ht || 0)} HT</div></div></div><span class="bo-status ${sc}">${sl}</span>${qItems.length ? `<div class="bo-lines">${lh2}${qItems.length > 3 ? `<div class="bo-line" style="color:#6b7280">+ ${qItems.length - 3} autre(s)</div>` : ''}</div>` : ''}</div>`;
+    const notSigned = q.pro_status !== 'terrain_signé';
+    return `<div class="bo-item">
+      <div class="bo-header">
+        <div><div class="bo-name">${q.client_name || '—'}</div><div class="bo-meta">${ds}</div></div>
+        <div style="text-align:right"><div class="bo-amount">${fmt(q.total_ttc || 0)} TTC</div><div style="font-size:12px;color:#9ca3af">${fmt(q.total_ht || 0)} HT</div></div>
+      </div>
+      <span class="bo-status ${sc}">${sl}</span>
+      ${qItems.length ? `<div class="bo-lines">${lh2}${qItems.length > 3 ? `<div class="bo-line" style="color:#6b7280">+ ${qItems.length - 3} autre(s)</div>` : ''}</div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button style="flex:1;padding:9px;border:1px solid #2f2f2f;border-radius:10px;background:#000;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" onclick="openEdit('${q.id}')">✏️ Modifier</button>
+        ${notSigned ? `<button style="flex:1;padding:9px;border:1px solid #f97316;border-radius:10px;background:#000;color:#f97316;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" onclick="openEditSig('${q.id}')">✍️ Signer</button>` : ''}
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -1563,6 +1657,254 @@ async function loadDashboard() {
     console.error('Dashboard error:', e);
     document.getElementById('dashboard-stats').innerHTML = '<p style="color:#ef4444;font-size:13px;grid-column:span 2">Erreur de connexion.</p>';
   }
+}
+
+// ── Édition devis back office ─────────────────────────────────────────────────
+let editQuote = null;   // quote object en cours d'édition
+let editItems = [];     // lignes en cours d'édition
+
+function openEdit(quoteId) {
+  const q = allBoQuotes.find(x => x.id === quoteId);
+  if (!q) return;
+  editQuote = { ...q };
+  editItems = (allBoItems[quoteId] || []).map(it => ({ ...it }));
+  document.getElementById('edit-title').textContent = `Modifier — ${q.client_name || ''}`;
+  document.getElementById('edit-name').value = q.client_name || '';
+  document.getElementById('edit-email').value = q.client_email || '';
+  document.getElementById('edit-phone').value = q.client_phone || '';
+  document.getElementById('edit-address').value = q.client_address || '';
+  document.getElementById('edit-discount').value = q.discount_pct || 0;
+  renderEditItems();
+  go('screen-edit');
+}
+
+function renderEditItems() {
+  const list = document.getElementById('edit-items-list');
+  if (!editItems.length) { list.innerHTML = '<p style="color:#6b7280;font-size:13px;padding:8px 0">Aucune prestation.</p>'; renderEditTotals(); return; }
+  list.innerHTML = editItems.map((it, i) => `
+    <div class="item-line">
+      <div class="il-left">
+        <input type="text" value="${it.label}" oninput="editItems[${i}].label=this.value" style="background:#000;border:1px solid #2f2f2f;border-radius:8px;padding:7px 10px;font-size:13px;color:#fff;font-family:inherit;width:100%;outline:none;margin-bottom:6px">
+        <div style="display:flex;gap:6px">
+          <input type="number" value="${it.price_ht || it.priceHT || 0}" oninput="editItems[${i}].price_ht=parseFloat(this.value)||0;editItems[${i}].total_ht=(editItems[${i}].price_ht*(editItems[${i}].qty||1));renderEditTotals()" style="background:#000;border:1px solid #2f2f2f;border-radius:8px;padding:7px 10px;font-size:13px;color:#fff;font-family:inherit;width:80px;outline:none">
+          <span style="color:#6b7280;font-size:13px;align-self:center">€ HT ×</span>
+          <input type="number" value="${it.qty || 1}" oninput="editItems[${i}].qty=parseFloat(this.value)||1;editItems[${i}].total_ht=(editItems[${i}].price_ht*(editItems[${i}].qty));renderEditTotals()" style="background:#000;border:1px solid #2f2f2f;border-radius:8px;padding:7px 10px;font-size:13px;color:#fff;font-family:inherit;width:60px;outline:none">
+          <span style="color:#6b7280;font-size:13px;align-self:center">${it.unit || ''}</span>
+        </div>
+      </div>
+      <div class="il-right">
+        <div class="il-total">${fmt((it.price_ht||it.priceHT||0)*(it.qty||1))} HT</div>
+        <span class="il-del" onclick="editItems.splice(${i},1);renderEditItems()">🗑️</span>
+      </div>
+    </div>`).join('');
+  renderEditTotals();
+}
+
+function editAddItem() {
+  const label = document.getElementById('edit-new-label').value.trim();
+  const price = parseFloat(document.getElementById('edit-new-price').value) || 0;
+  const qty = parseFloat(document.getElementById('edit-new-qty').value) || 1;
+  const unit = document.getElementById('edit-new-unit').value.trim();
+  if (!label) { alert('Saisissez une description.'); return; }
+  editItems.push({ id: uuid(), label, price_ht: price, qty, unit, total_ht: price * qty });
+  document.getElementById('edit-new-label').value = '';
+  document.getElementById('edit-new-price').value = '';
+  document.getElementById('edit-new-qty').value = '';
+  document.getElementById('edit-new-unit').value = '';
+  renderEditItems();
+}
+
+function getEditTotals() {
+  const subtotal = editItems.reduce((s, it) => s + (it.price_ht || 0) * (it.qty || 1), 0);
+  const disc = Math.min(50, Math.max(0, parseFloat(document.getElementById('edit-discount').value) || 0));
+  const totalHT = Math.round(subtotal * (1 - disc / 100) * 100) / 100;
+  const tva = Math.round(totalHT * VAT * 100) / 100;
+  const totalTTC = Math.round((totalHT + tva) * 100) / 100;
+  return { subtotal, disc, totalHT, tva, totalTTC };
+}
+
+function renderEditTotals() {
+  const { subtotal, disc, totalHT, tva, totalTTC } = getEditTotals();
+  document.getElementById('edit-totals-box').innerHTML = totalsHTML(subtotal, disc, totalHT, tva, totalTTC);
+}
+
+async function saveEdit() {
+  if (!editQuote) return;
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const { subtotal, disc, totalHT, tva, totalTTC } = getEditTotals();
+  const name = document.getElementById('edit-name').value;
+  const email = document.getElementById('edit-email').value;
+  const phone = document.getElementById('edit-phone').value;
+  const address = document.getElementById('edit-address').value;
+
+  try {
+    // Mise à jour Supabase quotes
+    await sbUpdate('quotes', editQuote.id, {
+      client_name: name, client_email: email, client_phone: phone, client_address: address,
+      total_ht: totalHT, tva, total_ttc: totalTTC, discount_pct: disc,
+    });
+    // Supprimer anciens items et réinsérer
+    await sbDelete('quote_items', `quote_id=eq.${editQuote.id}`);
+    const newItems = editItems.map(it => ({
+      id: uuid(), quote_id: editQuote.id,
+      label: it.label, qty: it.qty, unit: it.unit || '',
+      price_ht: it.price_ht || 0, total_ht: (it.price_ht || 0) * (it.qty || 1),
+      famille_key: it.famille_key || 'edit', service_key: it.service_key || 'edit',
+      photo_url: null, meta: null,
+    }));
+    if (newItems.length) await sbInsert('quote_items', newItems);
+
+    // Mise à jour Axonaut via proxy
+    const devisData = {
+      ref: editQuote.ref || '', company: editQuote.company || currentCompany,
+      name, email, phone, address, items: editItems.map(it => ({
+        label: it.label, qty: it.qty, unit: it.unit || '',
+        priceHT: it.price_ht || 0, totalHT: (it.price_ht||0)*(it.qty||1), isHaussmann: false,
+      })),
+      subtotal, disc, totalHT, tva, totalTTC,
+      axonautQuoteId: editQuote.axonaut_quote_id || null,
+    };
+    await fetch(EMAIL_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ updateMode: true, devisData }),
+    });
+
+    // Rafraîchir
+    await loadBackoffice();
+    alert('✅ Devis mis à jour !');
+    go('screen-backoffice');
+  } catch (e) {
+    console.error('Edit save error:', e);
+    alert('Erreur lors de la sauvegarde : ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '💾 Enregistrer les modifications';
+}
+
+// ── Signature sur place depuis back office ────────────────────────────────────
+let editSigQuoteId = null;
+
+function openEditSig(quoteId) {
+  const q = allBoQuotes.find(x => x.id === quoteId);
+  if (!q) return;
+  editSigQuoteId = quoteId;
+  editQuote = { ...q };
+  const { totalTTC } = getEditTotalsFromQuote(q);
+  document.getElementById('edit-sig-recap').innerHTML = `
+    <div class="card-title">Devis à signer</div>
+    <div class="recap-name">${q.client_name || '—'}</div>
+    <div class="tot-row final" style="margin-top:10px">
+      <span class="tot-lbl">Total TTC</span>
+      <span class="tot-val">${fmt(q.total_ttc || 0)}</span>
+    </div>`;
+  document.getElementById('edit-cgv-text').innerHTML = buildCGV(q.company || currentCompany);
+  document.getElementById('edit-cgv-check').checked = false;
+  document.getElementById('edit-sig-card').style.display = 'none';
+  document.getElementById('edit-sig-validate-btn').style.display = 'none';
+  initEditSigCanvas();
+  go('screen-edit-sig');
+}
+
+function getEditTotalsFromQuote(q) {
+  return { totalHT: q.total_ht || 0, tva: q.tva || 0, totalTTC: q.total_ttc || 0 };
+}
+
+function onEditCgvChange() {
+  const checked = document.getElementById('edit-cgv-check').checked;
+  document.getElementById('edit-sig-card').style.display = checked ? '' : 'none';
+  document.getElementById('edit-sig-validate-btn').style.display = checked ? '' : 'none';
+}
+
+function initEditSigCanvas() {
+  const zone = document.getElementById('edit-sig-zone');
+  const nc = document.createElement('canvas');
+  nc.className = 'sig-canvas'; nc.id = 'edit-sig-canvas';
+  nc.width = zone.clientWidth || 300; nc.height = 200;
+  const old = zone.querySelector('canvas');
+  if (old) zone.replaceChild(nc, old); else zone.appendChild(nc);
+  const ctx = nc.getContext('2d');
+  ctx.fillStyle = '#f0f0f0'; ctx.fillRect(0, 0, nc.width, nc.height);
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  let drawing = false, lx = 0, ly = 0;
+  function pos(e) { const r = nc.getBoundingClientRect(); const s = e.touches ? e.touches[0] : e; return { x: s.clientX - r.left, y: s.clientY - r.top }; }
+  nc.addEventListener('mousedown', e => { drawing = true; const p = pos(e); lx = p.x; ly = p.y; document.getElementById('edit-sig-hint').style.display = 'none'; });
+  nc.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = pos(e); lx = p.x; ly = p.y; document.getElementById('edit-sig-hint').style.display = 'none'; }, { passive: false });
+  nc.addEventListener('mousemove', e => { if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(p.x, p.y); ctx.stroke(); lx = p.x; ly = p.y; });
+  nc.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(p.x, p.y); ctx.stroke(); lx = p.x; ly = p.y; }, { passive: false });
+  nc.addEventListener('mouseup', () => drawing = false);
+  nc.addEventListener('touchend', () => drawing = false);
+}
+
+function clearEditSig() {
+  const c = document.getElementById('edit-sig-canvas'); if (!c) return;
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#f0f0f0'; ctx.fillRect(0, 0, c.width, c.height);
+  document.getElementById('edit-sig-hint').style.display = '';
+}
+
+async function validateEditSig() {
+  if (!editSigQuoteId) return;
+  const btn = document.getElementById('edit-sig-validate-btn');
+  btn.disabled = true; btn.textContent = 'Validation…';
+  try {
+    await sbUpdate('quotes', editSigQuoteId, { pro_status: 'terrain_signé' });
+    sendPushNotification('Vasco — Devis signé', `${editQuote.client_name || ''} a signé son devis`);
+    await loadBackoffice();
+    alert('✅ Devis signé et mis à jour !');
+    go('screen-backoffice');
+  } catch (e) {
+    alert('Erreur : ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = 'Valider la signature →';
+}
+
+// ── Envoi lien de signature Axonaut ──────────────────────────────────────────
+async function editSignOnSite() { openEditSig(editQuote.id); }
+
+async function editSendSignatureLink() {
+  if (!editQuote) return;
+  const email = document.getElementById('edit-email').value || editQuote.client_email;
+  if (!email) { alert('Aucun email client renseigné.'); return; }
+  const link = editQuote.axonaut_portal_url || '';
+  if (link) {
+    document.getElementById('edit-sig-link').style.display = '';
+    document.getElementById('edit-sig-link-url').href = link;
+    document.getElementById('edit-sig-link-url').textContent = link;
+  }
+  // Envoyer l'email avec le lien
+  const html = `<div style="background:#000;color:#fff;padding:24px;font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto">
+    <h2 style="color:#f97316">Votre devis est prêt à signer</h2>
+    <p style="color:#9ca3af;margin:16px 0">Bonjour ${editQuote.client_name || ''},</p>
+    <p style="color:#9ca3af">Votre devis est disponible et vous pouvez le signer en cliquant sur le bouton ci-dessous.</p>
+    ${link ? `<a href="${link}" style="display:inline-block;margin:20px 0;padding:14px 24px;background:#f97316;color:#000;border-radius:10px;font-weight:900;text-decoration:none">✍️ Signer mon devis</a>` : ''}
+    <p style="color:#6b7280;font-size:12px;margin-top:20px">Ce lien est valable 30 jours.</p>
+  </div>`;
+  const co = COMPANIES[editQuote.company || currentCompany] || COMPANIES.lmp;
+  try {
+    await fetch(EMAIL_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: email, subject: `Votre devis — ${editQuote.client_name || ''}`, html, fromName: co.name, fromEmail: co.email }),
+    });
+    alert(`✅ Lien de signature envoyé à ${email}`);
+  } catch (e) { alert('Erreur envoi email : ' + e.message); }
+}
+
+// ── Supabase helpers update/delete ────────────────────────────────────────────
+async function sbUpdate(table, id, data) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(data),
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+async function sbDelete(table, qs) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${qs}`, {
+    method: 'DELETE',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
+  });
+  if (!r.ok) throw new Error(await r.text());
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────

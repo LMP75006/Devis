@@ -59,7 +59,7 @@ async function findOrCreateCustomer(d, company) {
 
   // Créer le client — endpoint /companies avec company_name requis
   const payload = {
-    company_name: d.name || 'Client',
+    name: d.name || 'Client',
     employees: [
       {
         first_name: firstName,

@@ -80,11 +80,11 @@ async function findOrCreateCustomer(d, company) {
 }
 
 async function createAxonautQuote(d, companyId, company) {
-  const lines = (d.items || []).map(it => ({
-    title: it.label + (it.isHaussmann ? ' (+30%)' : ''),
+  const products = (d.items || []).map(it => ({
+    name: it.label + (it.isHaussmann ? ' (+30%)' : ''),
     quantity: it.qty,
-    unit_price_duty_free: it.priceHT,
-    tax_rate: 20,
+    unit_price: it.priceHT,
+    tax: 20,
   }));
 
   const notes = [
@@ -98,7 +98,7 @@ async function createAxonautQuote(d, companyId, company) {
   const payload = {
     reference: d.ref,
     company_id: companyId,
-    lines,
+    products,
     comment: notes,
   };
 

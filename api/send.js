@@ -138,9 +138,18 @@ async function createAxonautQuote(d, companyId, company) {
     d.notes            ? `Notes : ${d.notes}` : '',
   ].filter(Boolean).join('\n');
 
-  // Dates RFC3339 comme demandé par la doc
-  const now = new Date().toISOString();
-  const expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  // Dates RFC3339 avec offset timezone explicite (requis par Axonaut)
+  function toRFC3339(date) {
+    const pad = n => String(n).padStart(2, '0');
+    const offset = -date.getTimezoneOffset();
+    const sign = offset >= 0 ? '+' : '-';
+    const absOffset = Math.abs(offset);
+    const hh = pad(Math.floor(absOffset / 60));
+    const mm = pad(absOffset % 60);
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}${sign}${hh}:${mm}`;
+  }
+  const now = toRFC3339(new Date());
+  const expiry = toRFC3339(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
 
   const payload = {
     company_id: companyId,

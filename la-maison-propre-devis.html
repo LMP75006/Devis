@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LMP Devis">
-<title>La Maison Propre — Devis</title>
+<meta name="apple-mobile-web-app-title" content="Vasco">
+<title>Vasco</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#000;color:#fff;min-height:100vh}
@@ -17,10 +17,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .back-btn{background:none;border:1px solid #2f2f2f;border-radius:999px;padding:7px 14px;font-size:13px;color:#9ca3af;cursor:pointer;font-family:inherit}
 .hd-title{font-size:17px;font-weight:700;color:#fff;flex:1}
 .step-badge{font-size:12px;color:#6b7280;font-weight:600}
-.home-hd{background:#000;padding:32px 20px 24px;border-bottom:1px solid #1f1f1f}
+
+/* Home */
+.home-hd{padding:32px 20px 24px;border-bottom:1px solid #1f1f1f}
 .home-hd .brand{font-size:11px;color:#6b7280;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
-.home-hd h1{font-size:28px;font-weight:900;color:#fff}
+.home-hd h1{font-size:28px;font-weight:900}
 .home-hd .sub{font-size:13px;color:#6b7280;margin-top:4px}
+.home-hd.lmp{background:#000}
+.home-hd.fraioli{background:#0a0a05}
+
+/* Company selector */
+.company-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.co-btn{padding:20px 14px;border-radius:18px;border:1px solid #2f2f2f;background:#000;cursor:pointer;text-align:center}
+.co-btn .co-icon{font-size:28px;margin-bottom:8px}
+.co-btn .co-name{font-size:15px;font-weight:900;color:#fff}
+.co-btn .co-sub{font-size:12px;color:#6b7280;margin-top:4px}
+.co-btn.lmp-btn:hover,.co-btn.lmp-btn.active{border-color:#818cf8;background:#0a0a1a}
+.co-btn.fraioli-btn:hover,.co-btn.fraioli-btn.active{border-color:#f59e0b;background:#0a0800}
+
 .content{padding:16px 20px}
 .card{background:#050505;border:1px solid #2f2f2f;border-radius:18px;padding:18px;margin-bottom:14px}
 .card-title{font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}
@@ -28,12 +42,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat{background:#050505;border:1px solid #2f2f2f;border-radius:12px;padding:14px 10px;text-align:center}
 .stat-val{font-size:20px;font-weight:900;color:#fff}
 .stat-lbl{font-size:11px;color:#6b7280;margin-top:3px}
+
 .btn-p{display:block;width:100%;padding:16px;background:#000;color:#fff;border:1px solid #2f2f2f;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;text-align:center;margin-bottom:10px}
 .btn-p:active{opacity:.7}
 .btn-p.orange{border-color:#f97316;color:#f97316}
 .btn-p.purple{border-color:#a855f7;color:#a855f7}
+.btn-p.amber{border-color:#f59e0b;color:#f59e0b}
 .btn-p:disabled{opacity:.35;cursor:default}
 .btn-s{display:block;width:100%;padding:13px;background:transparent;color:#9ca3af;border:1px solid #2f2f2f;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;margin-bottom:10px}
+
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;color:#9ca3af;margin-bottom:6px;font-weight:600}
 .field input,.field select,.field textarea{width:100%;padding:13px 14px;border:1px solid #2f2f2f;border-radius:12px;font-size:15px;font-family:inherit;background:#000;color:#fff;-webkit-appearance:none;outline:none}
@@ -41,20 +58,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .field textarea{resize:vertical;min-height:70px}
 .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
 /* Autocomplete */
 .autocomplete-wrap{position:relative}
 .autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#111;border:1px solid #2f2f2f;border-radius:12px;z-index:100;max-height:200px;overflow-y:auto;margin-top:4px}
 .autocomplete-item{padding:12px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid #1f1f1f;color:#fff}
 .autocomplete-item:last-child{border-bottom:none}
-.autocomplete-item:hover,.autocomplete-item:active{background:#1f1f1f}
+.autocomplete-item:hover{background:#1f1f1f}
 
-/* Frais déplacement banner */
-.transport-banner{background:#1a1a00;border:1px solid #f97316;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:none}
+/* Transport banner */
+.transport-banner{background:#1a1200;border:1px solid #f59e0b;border-radius:12px;padding:12px 14px;margin-top:10px;display:none}
 .transport-banner p{font-size:13px;color:#fbbf24;margin-bottom:8px}
-.transport-banner .tb-row{display:flex;gap:8px}
+.tb-row{display:flex;gap:8px}
 .tb-btn{flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid #2f2f2f}
-.tb-btn.add{background:#f97316;color:#000;border-color:#f97316}
+.tb-btn.add{background:#f59e0b;color:#000;border-color:#f59e0b}
 .tb-btn.skip{background:transparent;color:#9ca3af}
 
 /* Type pills */
@@ -74,7 +92,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mini-sum-txt{font-size:13px;color:#9ca3af}
 .mini-sum-val{font-size:14px;font-weight:900;color:#f97316}
 
-/* Items */
 .item-line{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1f1f1f}
 .item-line:last-child{border-bottom:none}
 .il-left{flex:1}
@@ -83,6 +100,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .il-right{display:flex;align-items:flex-start;gap:10px}
 .il-total{font-size:14px;font-weight:900;color:#f97316}
 .il-del{font-size:18px;cursor:pointer;color:#6b7280}
+
 .totals-box{background:#000;border:1px solid #2f2f2f;border-radius:14px;padding:14px;margin-top:14px}
 .tot-row{display:flex;justify-content:space-between;padding:5px 0;font-size:14px}
 .tot-row.final{border-top:1px solid #2f2f2f;margin-top:8px;padding-top:12px}
@@ -94,7 +112,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .disc-row label{font-size:12px;color:#9ca3af;white-space:nowrap;font-weight:600}
 .disc-row input{flex:1;max-width:80px;padding:10px 12px;border:1px solid #2f2f2f;border-radius:10px;font-size:14px;background:#000;color:#fff;font-family:inherit;outline:none}
 
-/* Pièces (devis perso) */
+/* Pièces */
 .piece-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #1f1f1f}
 .piece-row:last-child{border-bottom:none}
 .piece-name{flex:1;font-size:14px;font-weight:700;color:#fff}
@@ -105,21 +123,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .add-piece-input{flex:1;padding:11px 14px;border:1px solid #2f2f2f;border-radius:12px;font-size:14px;background:#000;color:#fff;font-family:inherit;outline:none}
 .add-piece-btn{padding:11px 16px;border:1px solid #2f2f2f;border-radius:12px;background:#000;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
 
-/* Recap */
 .recap-name{font-size:17px;font-weight:900;margin-bottom:4px}
 .recap-muted{font-size:13px;color:#9ca3af;margin-top:3px}
 .devis-ref{font-size:11px;color:#4b5563;margin-top:10px;font-weight:600}
-.devis-type-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-top:8px}
+.devis-type-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-top:6px;margin-right:6px}
 .badge-classic{background:#1a1a2e;color:#818cf8;border:1px solid #3730a3}
 .badge-custom{background:#2e1a2e;color:#d946ef;border:1px solid #86198f}
+.badge-lmp{background:#0a0a1a;color:#818cf8;border:1px solid #3730a3}
+.badge-fraioli{background:#1a1000;color:#f59e0b;border:1px solid #92400e}
 
-/* Signature */
 .sig-zone{height:200px;border:1px solid #2f2f2f;border-radius:14px;background:#f0f0f0;position:relative;overflow:hidden;touch-action:none;cursor:crosshair}
 .sig-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#9ca3af;font-size:14px;pointer-events:none;white-space:nowrap}
 canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .clear-sig{background:none;border:none;color:#6b7280;font-size:12px;margin-top:6px;cursor:pointer;font-family:inherit;padding:4px 0}
 
-/* History */
 .hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #1f1f1f}
 .hist-item:last-child{border-bottom:none}
 .hi-name{font-size:15px;font-weight:700}
@@ -128,7 +145,6 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .hi-status{font-size:11px;font-weight:700;margin-top:3px;text-align:right}
 .status-signed{color:#22c55e}.status-pending{color:#f97316}
 
-/* Back office */
 .bo-item{background:#000;border:1px solid #2f2f2f;border-radius:14px;padding:14px;margin-bottom:10px}
 .bo-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .bo-name{font-size:15px;font-weight:900}
@@ -141,7 +157,6 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .bo-lines{margin-top:8px;padding-top:8px;border-top:1px solid #1f1f1f}
 .bo-line{font-size:12px;color:#9ca3af;padding:2px 0}
 
-/* Success */
 .success-wrap{text-align:center;padding:48px 20px}
 .success-circle{width:72px;height:72px;border-radius:50%;background:#052e16;border:1px solid #166534;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px}
 .sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#6b7280;padding:5px 12px;border:1px solid #1f1f1f;border-radius:999px;margin-top:8px}
@@ -149,15 +164,59 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .sync-dot.error{background:#ef4444}
 .loading{text-align:center;padding:32px;color:#6b7280;font-size:14px}
 
-/* Quote type selector */
+/* Photos */
+.photo-thumb{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/3;background:#0a0a0a;border:1px solid #2f2f2f}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-del{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border:none;border-radius:999px;width:26px;height:26px;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photo-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);font-size:11px;color:#fff;padding:4px 8px;font-weight:600}
+
+/* Period & filter buttons */
+.period-btn{flex:1;padding:10px;border:1px solid #2f2f2f;border-radius:10px;background:#000;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.period-btn.active{border-color:#f97316;color:#f97316;background:#0a0a0a}
+.filter-btn{padding:7px 12px;border:1px solid #2f2f2f;border-radius:999px;background:#000;color:#9ca3af;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.filter-btn.active{border-color:#818cf8;color:#818cf8;background:#0a0a1a}
+
+/* Dashboard stat cards */
+.dash-stat{background:#050505;border:1px solid #2f2f2f;border-radius:14px;padding:16px}
+.dash-stat-val{font-size:24px;font-weight:900;color:#fff}
+.dash-stat-lbl{font-size:12px;color:#6b7280;margin-top:4px}
+.dash-stat-sub{font-size:12px;color:#22c55e;margin-top:2px;font-weight:600}
+
+/* Prestation bar */
+.presta-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.presta-bar-label{font-size:13px;color:#e5e7eb;min-width:110px}
+.presta-bar-track{flex:1;height:8px;background:#1f1f1f;border-radius:999px;overflow:hidden}
+.presta-bar-fill{height:100%;border-radius:999px;background:#f97316}
+.presta-bar-val{font-size:12px;color:#9ca3af;min-width:40px;text-align:right}
+
+/* Conversion gauge */
+.conv-gauge{display:flex;align-items:center;gap:12px;padding:8px 0}
+.conv-pct{font-size:32px;font-weight:900;color:#f97316}
+.conv-detail{font-size:13px;color:#9ca3af;line-height:1.5}
+
+/* PDF preview */
+.pdf-preview{background:#fff;color:#000;padding:24px;font-family:-apple-system,sans-serif}
+.pdf-preview h2{font-size:18px;font-weight:900;margin-bottom:4px}
+.pdf-preview .pdf-sub{font-size:12px;color:#666;margin-bottom:16px}
+.pdf-table{width:100%;border-collapse:collapse;margin:12px 0}
+.pdf-table th{font-size:11px;font-weight:700;color:#666;text-transform:uppercase;padding:6px 8px;border-bottom:2px solid #eee;text-align:left}
+.pdf-table td{font-size:13px;padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#333}
+.pdf-table td.right{text-align:right}
+.pdf-total-row{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;color:#333}
+.pdf-total-row.final{border-top:2px solid #000;margin-top:6px;padding-top:10px;font-size:17px;font-weight:900}
+
 .quote-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
 .qt-btn{padding:20px 14px;border-radius:18px;border:1px solid #2f2f2f;background:#000;cursor:pointer;text-align:center}
-.qt-btn:hover{border-color:#4b5563}
 .qt-icon{font-size:28px;margin-bottom:8px}
 .qt-title{font-size:15px;font-weight:900;color:#fff}
 .qt-sub{font-size:12px;color:#6b7280;margin-top:4px;line-height:1.4}
-.qt-btn.classic:hover,.qt-btn.classic.active{border-color:#818cf8;background:#0a0a1a}
-.qt-btn.custom:hover,.qt-btn.custom.active{border-color:#d946ef;background:#1a0a1a}
+.qt-btn.classic:hover{border-color:#818cf8;background:#0a0a1a}
+.qt-btn.custom:hover{border-color:#d946ef;background:#1a0a1a}
+
+/* Company indicator strip */
+.co-strip{height:3px;width:100%}
+.co-strip.lmp{background:linear-gradient(90deg,#818cf8,#6366f1)}
+.co-strip.fraioli{background:linear-gradient(90deg,#f59e0b,#d97706)}
 </style>
 </head>
 <body>
@@ -165,46 +224,93 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 
 <!-- HOME -->
 <div class="screen active" id="screen-home">
-  <div class="home-hd">
-    <div class="brand">S.A.R.L.</div>
-    <h1>La Maison Propre</h1>
-    <div class="sub">Devis terrain</div>
+  <div class="home-hd lmp" id="home-hd">
+    <div class="brand" id="home-brand">Sélectionner une société</div>
+    <h1 id="home-title">Vasco</h1>
+    <div class="sub" id="home-sub">Choisissez votre société ci-dessous</div>
   </div>
   <div class="content">
-    <button class="btn-p" onclick="go('screen-type')">+ Nouveau devis</button>
-    <button class="btn-s" onclick="go('screen-history')">Historique local</button>
-    <button class="btn-s" onclick="go('screen-backoffice')">📊 Back office</button>
-    <div class="stats">
+    <div class="company-grid">
+      <div class="co-btn lmp-btn" onclick="selectCompany('lmp')">
+        <div class="co-icon">🏠</div>
+        <div class="co-name">La Maison Propre</div>
+        <div class="co-sub">Paris</div>
+      </div>
+      <div class="co-btn fraioli-btn" onclick="selectCompany('fraioli')">
+        <div class="co-icon">✨</div>
+        <div class="co-name">Fraïoli</div>
+        <div class="co-sub">Paris</div>
+      </div>
+    </div>
+    <button class="btn-p" id="btn-new-devis" style="display:none" onclick="go('screen-type')">+ Nouveau devis</button>
+    <button class="btn-s" id="btn-dashboard" style="display:none" onclick="go('screen-dashboard')">📊 Tableau de bord</button>
+    <button class="btn-s" id="btn-history" style="display:none" onclick="go('screen-history')">Historique local</button>
+    <button class="btn-s" id="btn-bo" style="display:none" onclick="go('screen-backoffice')">🗂 Back office</button>
+    <div class="stats" id="stats-block" style="display:none">
       <div class="stat"><div class="stat-val" id="stat-count">0</div><div class="stat-lbl">Devis</div></div>
       <div class="stat"><div class="stat-val" id="stat-signed">0</div><div class="stat-lbl">Signés</div></div>
       <div class="stat"><div class="stat-val" id="stat-ca">0€</div><div class="stat-lbl">CA TTC</div></div>
     </div>
+    <div id="offline-banner" style="display:none;margin-top:12px;background:#1a0a00;border:1px solid #f59e0b;border-radius:12px;padding:10px 14px;font-size:13px;color:#fbbf24">
+      📡 Mode hors ligne — <span id="offline-count">0</span> devis en attente de synchronisation
+    </div>
   </div>
 </div>
 
-<!-- CHOIX TYPE -->
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+  <div class="hd"><div class="hd-row">
+    <button class="back-btn" onclick="go('screen-home')">← Retour</button>
+    <span class="hd-title" id="dashboard-title">Tableau de bord</span>
+    <button class="back-btn" onclick="loadDashboard()" style="margin-left:auto">↺</button>
+  </div></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Période</div>
+      <div style="display:flex;gap:8px">
+        <button class="period-btn active" id="period-week" onclick="setPeriod('week')">Cette semaine</button>
+        <button class="period-btn" id="period-month" onclick="setPeriod('month')">Ce mois</button>
+      </div>
+    </div>
+    <div id="dashboard-stats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"></div>
+    <div class="card" id="dashboard-chart-card">
+      <div class="card-title">CA par jour</div>
+      <canvas id="dashboard-chart" height="120"></canvas>
+    </div>
+    <div class="card" id="dashboard-prestations-card">
+      <div class="card-title">Prestations les plus vendues</div>
+      <div id="dashboard-prestations"></div>
+    </div>
+    <div class="card" id="dashboard-conversion-card">
+      <div class="card-title">Taux de conversion</div>
+      <div id="dashboard-conversion"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TYPE -->
 <div class="screen" id="screen-type">
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-home')">← Retour</button>
-    <span class="hd-title">Type de devis</span>
+    <span class="hd-title" id="type-title">Type de devis</span>
   </div></div>
   <div class="content">
     <div class="quote-type-grid">
       <div class="qt-btn classic" onclick="selectType('classic')">
         <div class="qt-icon">🧾</div>
         <div class="qt-title">Devis classique</div>
-        <div class="qt-sub">Catalogue : tapis, vitrerie, ménage…</div>
+        <div class="qt-sub">Catalogue prestations</div>
       </div>
       <div class="qt-btn custom" onclick="selectType('custom')">
         <div class="qt-icon">🏠</div>
         <div class="qt-title">Devis personnalisé</div>
-        <div class="qt-sub">Par pièce avec heures de travail</div>
+        <div class="qt-sub">Par pièce, heures libres</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- CLIENT (partagé) -->
+<!-- CLIENT -->
 <div class="screen" id="screen-client">
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-type')">← Retour</button>
@@ -222,25 +328,37 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
           <div class="autocomplete-list" id="address-list" style="display:none"></div>
         </div>
         <div id="transport-banner" class="transport-banner">
-          <p>📍 Cette adresse est hors du 6e arrondissement de Paris. Des frais de déplacement s'appliquent.</p>
+          <p>📍 Adresse hors du 6e arrondissement — frais de déplacement applicables.</p>
           <div class="tb-row">
-            <button class="tb-btn add" onclick="addTransport()">+ Ajouter 50€ HT déplacement</button>
+            <button class="tb-btn add" onclick="addTransport()">+ Ajouter 50 € HT déplacement</button>
             <button class="tb-btn skip" onclick="skipTransport()">Ignorer</button>
           </div>
         </div>
       </div>
+      <div class="row-3">
+        <div class="field"><label>Superficie (m²)</label><input type="number" id="c-superficie" placeholder="65" min="0"></div>
+        <div class="field"><label>Étage</label><input type="text" id="c-etage" placeholder="3e"></div>
+        <div class="field"><label>Ascenseur</label>
+          <select id="c-ascenseur">
+            <option value="">—</option>
+            <option>Oui</option>
+            <option>Non</option>
+          </select>
+        </div>
+      </div>
       <div class="field"><label>Téléphone</label><input type="tel" id="c-phone" placeholder="06 12 34 56 78"></div>
       <div class="field"><label>Email (pour recevoir le devis)</label><input type="email" id="c-email" placeholder="marie@email.com"></div>
+      <div class="field"><label>Date d'intervention souhaitée</label><input type="date" id="c-date-intervention"></div>
     </div>
     <div class="card">
       <div class="card-title">Type de bien</div>
       <div class="type-grid" id="type-grid"></div>
-      <div class="row-2" style="margin-top:12px">
-        <div class="field"><label>Surface (m²)</label><input type="number" id="c-surface" placeholder="65"></div>
-        <div class="field"><label>Étage / accès</label><input type="text" id="c-etage" placeholder="3e sans asc."></div>
-      </div>
     </div>
-    <button class="btn-p" id="btn-step2" onclick="goStep2()">Continuer →</button>
+    <div class="card">
+      <div class="card-title">Sujet</div>
+      <div class="type-grid" id="subject-grid"></div>
+    </div>
+    <button class="btn-p" onclick="goStep2()">Continuer →</button>
   </div>
 </div>
 
@@ -268,7 +386,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
         <input type="number" id="height-other-input" placeholder="Ex : 2.8" step="0.1" min="1">
       </div>
     </div>
-    <div class="card">
+    <div class="card" id="qty-card">
       <div class="card-title" id="qty-title">Quantité</div>
       <div class="field"><input type="number" id="qty-input" placeholder="0" step="0.5" min="0"></div>
       <div id="mini-sum" style="display:none" class="mini-sum">
@@ -310,12 +428,12 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
       <div class="card-title">Taux horaire HT</div>
       <div class="field">
         <label>Prix à l'heure (€ HT)</label>
-        <input type="number" id="custom-rate" placeholder="Ex : 60" min="1" step="1" value="60" oninput="renderCustomTotals()">
+        <input type="number" id="custom-rate" placeholder="60" min="1" step="1" value="60" oninput="renderPieces()">
       </div>
     </div>
     <div class="card">
       <div class="card-title">Pièces</div>
-      <div id="pieces-list"></div>
+      <div id="pieces-list"><p style="font-size:13px;color:#6b7280;padding:8px 0 12px">Aucune pièce ajoutée.</p></div>
       <div class="add-piece-row">
         <input type="text" class="add-piece-input" id="new-piece-name" placeholder="Nom de la pièce (ex: Salon)">
         <button class="add-piece-btn" onclick="addPiece()">+ Ajouter</button>
@@ -337,7 +455,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
         <option>Bi-mensuel</option><option>Mensuel</option><option>Trimestriel</option>
       </select>
     </div>
-    <div class="field"><label>Notes</label><textarea id="custom-notes" placeholder="Instructions particulières, accès..."></textarea></div>
+    <div class="field"><label>Notes</label><textarea id="custom-notes" placeholder="Instructions particulières..."></textarea></div>
     <button class="btn-p purple" onclick="goStep3Custom()">Continuer →</button>
   </div>
 </div>
@@ -345,13 +463,32 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 <!-- RECAP -->
 <div class="screen" id="screen-recap">
   <div class="hd"><div class="hd-row">
-    <button class="back-btn" id="recap-back-btn" onclick="goRecapBack()">← Retour</button>
+    <button class="back-btn" onclick="goRecapBack()">← Retour</button>
     <span class="hd-title">Récapitulatif</span>
-    <span class="step-badge">3 / 3</span>
+    <span class="step-badge">3 / 4</span>
   </div></div>
   <div class="content">
     <div class="card" id="recap-client-card"></div>
     <div class="card" id="recap-items-card"></div>
+    <button class="btn-p orange" onclick="go('screen-pdf')">Aperçu du devis →</button>
+  </div>
+</div>
+
+<!-- PHOTOS -->
+<div class="screen" id="screen-photos">
+  <div class="hd"><div class="hd-row">
+    <button class="back-btn" onclick="go('screen-recap')">← Retour</button>
+    <span class="hd-title">Photos avant intervention</span>
+    <span class="step-badge">4 / 4</span>
+  </div></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">Photos du bien</div>
+      <p style="font-size:13px;color:#9ca3af;margin-bottom:14px">Prenez des photos de l'état actuel du bien. Elles seront annexées au devis pour justifier les prestations.</p>
+      <div id="photos-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"></div>
+      <button class="btn-p" onclick="addPhoto()">📷 Ajouter une photo</button>
+      <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelected(this)">
+    </div>
     <button class="btn-p orange" onclick="go('screen-signature')">Faire signer le client →</button>
   </div>
 </div>
@@ -359,21 +496,29 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 <!-- SIGNATURE -->
 <div class="screen" id="screen-signature">
   <div class="hd"><div class="hd-row">
-    <button class="back-btn" onclick="go('screen-recap')">← Retour</button>
+    <button class="back-btn" onclick="go('screen-photos')">← Retour</button>
     <span class="hd-title">Signature client</span>
   </div></div>
   <div class="content">
     <div class="card" id="sig-recap-mini"></div>
     <div class="card">
+      <div class="card-title">Conditions générales</div>
+      <div id="cgv-text" style="font-size:12px;color:#9ca3af;line-height:1.6;max-height:160px;overflow-y:auto;margin-bottom:14px;padding:10px;background:#000;border-radius:10px;border:1px solid #2f2f2f"></div>
+      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px;background:#0a0a0a;border-radius:12px;border:1px solid #2f2f2f" id="cgv-label">
+        <input type="checkbox" id="cgv-check" onchange="onCgvChange()" style="width:20px;height:20px;margin-top:2px;accent-color:#f97316;flex-shrink:0">
+        <span style="font-size:13px;color:#e5e7eb;line-height:1.5">J'ai lu et j'accepte les conditions générales de vente ci-dessus. Je reconnais que la signature électronique apposée ci-dessous a valeur d'engagement contractuel.</span>
+      </label>
+    </div>
+    <div class="card" id="sig-card" style="display:none">
       <div class="card-title">Signature du client</div>
-      <p style="font-size:13px;color:#9ca3af;margin-bottom:14px">En signant, le client accepte le devis et autorise La Maison Propre à réaliser les prestations.</p>
+      <p style="font-size:13px;color:#9ca3af;margin-bottom:14px">Signez dans la zone ci-dessous pour valider le devis.</p>
       <div class="sig-zone" id="sig-zone">
         <canvas class="sig-canvas" id="sig-canvas"></canvas>
         <span class="sig-hint" id="sig-hint">Signez ici avec le doigt</span>
       </div>
-      <button class="clear-sig" onclick="clearSig()">✕ Effacer la signature</button>
+      <button class="clear-sig" onclick="clearSig()">✕ Effacer</button>
     </div>
-    <button class="btn-p orange" id="btn-finaliser" onclick="finaliser()">Valider et envoyer →</button>
+    <button class="btn-p orange" id="btn-finaliser" onclick="finaliser()" style="display:none">Valider et envoyer →</button>
   </div>
 </div>
 
@@ -400,15 +545,53 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="content"><div class="card" id="history-list"></div></div>
 </div>
 
+<!-- PDF PREVIEW -->
+<div class="screen" id="screen-pdf">
+  <div class="hd"><div class="hd-row">
+    <button class="back-btn" onclick="go('screen-recap')">← Retour</button>
+    <span class="hd-title">Aperçu du devis</span>
+  </div></div>
+  <div class="content">
+    <div id="pdf-preview-card" class="card" style="padding:0;overflow:hidden"></div>
+    <button class="btn-p" onclick="downloadPDF()">⬇ Télécharger en PDF</button>
+    <button class="btn-p orange" onclick="go('screen-photos')">Photos du bien →</button>
+  </div>
+</div>
+
 <!-- BACK OFFICE -->
 <div class="screen" id="screen-backoffice">
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-home')">← Retour</button>
-    <span class="hd-title">Back office</span>
+    <span class="hd-title" id="bo-title">Back office</span>
     <button class="back-btn" onclick="loadBackoffice()" style="margin-left:auto">↺</button>
   </div></div>
   <div class="content">
-    <div class="stats" style="margin-bottom:16px;margin-top:0">
+    <!-- Filtres -->
+    <div class="card">
+      <div class="card-title">Filtres</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="filter-btn active" data-filter="company" data-val="all" onclick="setFilter('company','all',this)">Toutes</button>
+        <button class="filter-btn" data-filter="company" data-val="lmp" onclick="setFilter('company','lmp',this)">La Maison Propre</button>
+        <button class="filter-btn" data-filter="company" data-val="fraioli" onclick="setFilter('company','fraioli',this)">Fraïoli</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="filter-btn active" data-filter="status" data-val="all" onclick="setFilter('status','all',this)">Tous statuts</button>
+        <button class="filter-btn" data-filter="status" data-val="terrain_signé" onclick="setFilter('status','terrain_signé',this)">Signés</button>
+        <button class="filter-btn" data-filter="status" data-val="reçu" onclick="setFilter('status','reçu',this)">Reçus</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="filter-btn active" data-filter="period" data-val="all" onclick="setFilter('period','all',this)">Tout</button>
+        <button class="filter-btn" data-filter="period" data-val="week" onclick="setFilter('period','week',this)">Cette semaine</button>
+        <button class="filter-btn" data-filter="period" data-val="month" onclick="setFilter('period','month',this)">Ce mois</button>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <span style="font-size:12px;color:#9ca3af;white-space:nowrap">Montant min</span>
+        <input type="number" id="bo-filter-min" placeholder="0 €" min="0" style="flex:1;padding:8px 12px;border:1px solid #2f2f2f;border-radius:10px;font-size:13px;background:#000;color:#fff;font-family:inherit;outline:none" oninput="applyFilters()">
+        <span style="font-size:12px;color:#9ca3af;white-space:nowrap">Max</span>
+        <input type="number" id="bo-filter-max" placeholder="∞" min="0" style="flex:1;padding:8px 12px;border:1px solid #2f2f2f;border-radius:10px;font-size:13px;background:#000;color:#fff;font-family:inherit;outline:none" oninput="applyFilters()">
+      </div>
+    </div>
+    <div class="stats" style="margin-bottom:14px;margin-top:0">
       <div class="stat"><div class="stat-val" id="bo-count">—</div><div class="stat-lbl">Devis</div></div>
       <div class="stat"><div class="stat-val" id="bo-signed">—</div><div class="stat-lbl">Signés</div></div>
       <div class="stat"><div class="stat-val" id="bo-ca">—</div><div class="stat-lbl">CA TTC</div></div>
@@ -417,477 +600,977 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   </div>
 </div>
 
-</div>
+</div><!-- /app -->
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
-const SB_URL  = 'https://fkeldwnizoebmlfyotpy.supabase.co';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrZWxkd25pem9lYm1sZnlvdHB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNDkzNzUsImV4cCI6MjA5MTgyNTM3NX0.zdZALraUoXed9tkIWaVhyc6Duk8mdoNMpbhM31QxUv0';
-const RESEND_KEY = 're_YheJDDY4_JNgZoBXJZVEUJkPJtN5eUVVF';
-const FROM_EMAIL = 'contact@lamaisonpropre.fr';
-const FROM_NAME  = 'La Maison Propre';
-const VAT = 0.20, HAUS = 1.2;
+const SB_URL = 'https://fkeldwnizoebmlfyotpy.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrZWxkd25pem9lYm1sZnlvdHB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNDkzNzUsImV4cCI6MjA5MTgyNTM3NX0.zdZALraUoXed9tkIWaVhyc6Duk8mdoNMpbhM31QxUv0';
+// Email proxy URL (Vercel function — à déployer)
+const EMAIL_PROXY = 'https://lmp-email-proxy.vercel.app/api/send';
+
+const VAT = 0.20;
+const HAUS_MULT = 1.30; // 30%
 const TRANSPORT_FEE = 50;
 
+// Sociétés
+const COMPANIES = {
+  lmp: {
+    key: 'lmp',
+    name: 'La Maison Propre',
+    legal: 'S.A.R.L.',
+    email: 'contact@lamaisonpropre.fr',
+    phone: '01 53 63 01 77',
+    color: '#818cf8',
+    colorClass: 'lmp',
+  },
+  fraioli: {
+    key: 'fraioli',
+    name: 'Fraïoli',
+    legal: '',
+    email: 'contact@lamaisonpropre.fr', // même email pour l'instant
+    phone: '01 53 63 01 77',
+    color: '#f59e0b',
+    colorClass: 'fraioli',
+  }
+};
+
 // ── Supabase ──────────────────────────────────────────────────────────────────
-async function sbInsert(t,r){const res=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(r)});if(!res.ok)throw new Error(await res.text());}
-async function sbSelect(t,qs=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${qs}&order=created_at.desc`,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});if(!r.ok)throw new Error(await r.text());return r.json();}
+async function sbInsert(t, r) {
+  const res = await fetch(`${SB_URL}/rest/v1/${t}`, {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(r)
+  });
+  if (!res.ok) throw new Error(await res.text());
+}
+async function sbSelect(t, qs = '') {
+  const r = await fetch(`${SB_URL}/rest/v1/${t}?${qs}&order=created_at.desc`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
 
-// ── Email ─────────────────────────────────────────────────────────────────────
-async function sendEmail(to,subject,html){if(!to||!to.includes('@'))return false;try{const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{'Authorization':'Bearer '+RESEND_KEY,'Content-Type':'application/json'},body:JSON.stringify({from:`${FROM_NAME} <${FROM_EMAIL}>`,to:[to],subject,html})});return r.ok;}catch(e){return false;}}
+// ── Email via proxy Vercel ────────────────────────────────────────────────────
+async function sendEmail(to, subject, html, fromCompany, devisData) {
+  if (!to || !to.includes('@')) return false;
+  const co = COMPANIES[fromCompany] || COMPANIES.lmp;
+  try {
+    const r = await fetch(EMAIL_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject, html, fromName: co.name, fromEmail: co.email, devisData: devisData || null })
+    });
+    if (!r.ok) return false;
+    const data = await r.json();
+    return data;
+  } catch (e) { console.warn('Email proxy error:', e); return false; }
+}
 
-function buildEmailHTML(d){
-  const isCustom=d.quoteType==='custom';
-  const lines=d.items.map(it=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#e5e7eb">${it.label}${it.isHaussmann?' (+20%)':''}</td><td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#9ca3af;text-align:center">${it.qty} ${it.unit}</td><td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#9ca3af;text-align:right">${fmt(it.priceHT)} HT</td><td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#f97316;text-align:right;font-weight:700">${fmt(it.totalHT)} HT</td></tr>`).join('');
-  return`<!DOCTYPE html><html><body style="background:#000;color:#fff;font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:20px"><div style="background:#050505;border:1px solid #2f2f2f;border-radius:18px;overflow:hidden"><div style="padding:24px;border-bottom:1px solid #1f1f1f"><div style="font-size:11px;color:#6b7280;text-transform:uppercase;margin-bottom:6px">S.A.R.L.</div><div style="font-size:24px;font-weight:900">La Maison Propre</div><div style="font-size:13px;color:#6b7280;margin-top:4px">${isCustom?'Devis personnalisé':'Devis'} — Réf. ${d.ref}</div></div><div style="padding:20px 24px"><div style="margin-bottom:16px"><div style="font-size:16px;font-weight:900">${d.name}</div>${d.address?`<div style="font-size:13px;color:#9ca3af;margin-top:3px">${d.address}</div>`:''} ${d.logement?`<div style="font-size:13px;color:#9ca3af;margin-top:3px">${d.logement}${d.surface?' • '+d.surface+' m²':''}</div>`:''}<div style="font-size:13px;color:#9ca3af;margin-top:3px">${d.freq}</div>${d.notes?`<div style="font-size:13px;color:#9ca3af;margin-top:6px;font-style:italic">${d.notes}</div>`:''}</div><table style="width:100%;border-collapse:collapse;border:1px solid #2f2f2f;border-radius:12px;overflow:hidden"><thead><tr style="background:#000"><th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Prestation</th><th style="padding:10px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Qté</th><th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">PU HT</th><th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Total HT</th></tr></thead><tbody>${lines}</tbody></table><div style="background:#000;border:1px solid #2f2f2f;border-radius:12px;padding:14px;margin-top:14px">${d.disc>0?`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">Remise ${d.disc}%</span><span style="color:#22c55e">−${fmt(d.subtotal-d.totalHT)}</span></div>`:''}<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">Total HT</span><span style="color:#fff;font-weight:700">${fmt(d.totalHT)}</span></div><div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">TVA (20%)</span><span style="color:#fff;font-weight:700">${fmt(d.tva)}</span></div><div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:6px;border-top:1px solid #2f2f2f;font-size:18px;font-weight:900"><span>Total TTC</span><span style="color:#f97316">${fmt(d.totalTTC)}</span></div></div><div style="margin-top:20px;padding:16px;background:#050505;border:1px solid #2f2f2f;border-radius:12px;font-size:13px;color:#9ca3af">Ce devis a été signé électroniquement sur site. Contact : <a href="mailto:contact@lamaisonpropre.fr" style="color:#f97316">contact@lamaisonpropre.fr</a> • 01 53 63 01 77</div></div></div></body></html>`;
+function buildEmailHTML(d) {
+  const co = COMPANIES[d.company] || COMPANIES.lmp;
+  const isCustom = d.quoteType === 'custom';
+  const lines = d.items.map(it => `<tr>
+    <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#e5e7eb">${it.label}${it.isHaussmann ? ' (+30%)' : ''}</td>
+    <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#9ca3af;text-align:center">${it.qty} ${it.unit}</td>
+    <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#9ca3af;text-align:right">${fmt(it.priceHT)} HT</td>
+    <td style="padding:8px 12px;border-bottom:1px solid #1f1f1f;color:#f97316;text-align:right;font-weight:700">${fmt(it.totalHT)} HT</td>
+  </tr>`).join('');
+  return `<!DOCTYPE html><html><body style="background:#000;color:#fff;font-family:-apple-system,sans-serif;max-width:600px;margin:0 auto;padding:20px">
+  <div style="background:#050505;border:1px solid #2f2f2f;border-radius:18px;overflow:hidden">
+    <div style="padding:24px;border-bottom:1px solid #1f1f1f;border-top:3px solid ${co.color}">
+      ${co.legal ? `<div style="font-size:11px;color:#6b7280;text-transform:uppercase;margin-bottom:6px">${co.legal}</div>` : ''}
+      <div style="font-size:24px;font-weight:900;color:${co.color}">${co.name}</div>
+      <div style="font-size:13px;color:#6b7280;margin-top:4px">${isCustom ? 'Devis personnalisé' : 'Devis'} — Réf. ${d.ref}</div>
+    </div>
+    <div style="padding:20px 24px">
+      <div style="margin-bottom:16px">
+        <div style="font-size:16px;font-weight:900">${d.name}</div>
+        ${d.address ? `<div style="font-size:13px;color:#9ca3af;margin-top:3px">${d.address}</div>` : ''}
+        ${d.superficie ? `<div style="font-size:13px;color:#9ca3af;margin-top:3px">Superficie : ${d.superficie} m²</div>` : ''}
+        ${d.logement ? `<div style="font-size:13px;color:#9ca3af;margin-top:3px">${d.logement}</div>` : ''}
+        ${d.subject && d.subject.length ? `<div style="font-size:13px;color:#f97316;margin-top:3px;font-weight:700">Sujet : ${Array.isArray(d.subject) ? d.subject.join(', ') : d.subject}</div>` : ''}
+        ${d.dateIntervention ? `<div style="font-size:13px;color:#22c55e;margin-top:3px;font-weight:700">📅 Intervention souhaitée : ${new Date(d.dateIntervention).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'})}</div>` : ''}
+        ${d.photosCount ? `<div style="font-size:13px;color:#9ca3af;margin-top:3px">📷 ${d.photosCount} photo(s) jointe(s) au dossier</div>` : ''}
+        <div style="font-size:13px;color:#9ca3af;margin-top:3px">${d.freq}</div>
+        ${d.notes ? `<div style="font-size:13px;color:#9ca3af;margin-top:6px;font-style:italic">${d.notes}</div>` : ''}
+      </div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #2f2f2f;border-radius:12px;overflow:hidden">
+        <thead><tr style="background:#000">
+          <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Prestation</th>
+          <th style="padding:10px 12px;text-align:center;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Qté</th>
+          <th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">PU HT</th>
+          <th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase">Total HT</th>
+        </tr></thead>
+        <tbody>${lines}</tbody>
+      </table>
+      <div style="background:#000;border:1px solid #2f2f2f;border-radius:12px;padding:14px;margin-top:14px">
+        ${d.disc > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">Remise ${d.disc}%</span><span style="color:#22c55e">−${fmt(d.subtotal - d.totalHT)}</span></div>` : ''}
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">Total HT</span><span style="color:#fff;font-weight:700">${fmt(d.totalHT)}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:14px"><span style="color:#9ca3af">TVA (20%)</span><span style="color:#fff;font-weight:700">${fmt(d.tva)}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:6px;border-top:1px solid #2f2f2f;font-size:18px;font-weight:900">
+          <span style="color:#fff">Total TTC</span><span style="color:#f97316">${fmt(d.totalTTC)}</span>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:16px;background:#050505;border:1px solid #2f2f2f;border-radius:12px;font-size:13px;color:#9ca3af">
+        Ce devis a été signé électroniquement sur site.<br>
+        Contact : <a href="mailto:${co.email}" style="color:${co.color}">${co.email}</a> • ${co.phone}
+      </div>
+    </div>
+  </div></body></html>`;
+}
+
+// ── Photos ────────────────────────────────────────────────────────────────────
+function addPhoto() { document.getElementById('photo-input').click(); }
+
+function onPhotoSelected(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    photos.push({ id: uuid(), dataUrl: e.target.result, label: `Photo ${photos.length + 1}` });
+    renderPhotos();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function removePhoto(id) { photos = photos.filter(p => p.id !== id); renderPhotos(); }
+
+function renderPhotos() {
+  const grid = document.getElementById('photos-grid');
+  if (!photos.length) { grid.innerHTML = '<p style="color:#6b7280;font-size:13px;grid-column:span 2;padding:8px 0">Aucune photo ajoutée. Vous pouvez continuer sans photo.</p>'; return; }
+  grid.innerHTML = photos.map(p => `
+    <div class="photo-thumb">
+      <img src="${p.dataUrl}" alt="${p.label}">
+      <button class="photo-del" onclick="removePhoto('${p.id}')">✕</button>
+      <div class="photo-label">${p.label}</div>
+    </div>`).join('');
+}
+
+// ── CGV ───────────────────────────────────────────────────────────────────────
+function buildCGV(company) {
+  const co = COMPANIES[company] || COMPANIES.lmp;
+  const isLMP = company === 'lmp';
+  const nom = isLMP ? 'La Maison Propre (S.A.R.L.)' : 'Fraïoli';
+  const email = co.email;
+  return `<strong style="color:#fff;display:block;margin-bottom:8px">Conditions générales de vente — ${nom}</strong>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">1. Objet</strong> — Les présentes CGV régissent les prestations de nettoyage et services à domicile réalisées par ${nom}.</p>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">2. Devis</strong> — Tout devis est valable 30 jours à compter de sa date d'émission. La signature du présent devis vaut acceptation des prestations et des tarifs indiqués.</p>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">3. Tarifs</strong> — Les prix sont indiqués en euros HT et TTC (TVA 20%). Toute prestation supplémentaire fera l'objet d'un avenant.</p>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">4. Paiement</strong> — Le règlement est dû à réception de facture. Tout retard de paiement entraîne des pénalités de 3 fois le taux d'intérêt légal.</p>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">5. Annulation</strong> — Toute annulation doit être notifiée au moins 48h avant l'intervention. En cas d'annulation tardive, une indemnité de 50% du montant HT sera facturée.</p>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">6. Responsabilité</strong> — La responsabilité de ${nom} est limitée aux dommages directs causés par ses intervenants. Toute réclamation doit être formulée dans les 24h suivant la prestation.</p>
+    <p style="margin-bottom:6px"><strong style="color:#e5e7eb">7. Données personnelles</strong> — Vos données sont utilisées uniquement pour la gestion de votre dossier client, conformément au RGPD. Vous disposez d'un droit d'accès et de suppression en écrivant à <a href="mailto:${email}" style="color:#f97316">${email}</a>.</p>
+    <p><strong style="color:#e5e7eb">8. Litiges</strong> — En cas de litige, une solution amiable sera recherchée avant tout recours judiciaire entre le client et ${nom}. Le tribunal compétent est celui de Paris.</p>`;
+}
+
+function resetCgv() {
+  const check = document.getElementById('cgv-check');
+  if (check) check.checked = false;
+  document.getElementById('cgv-text').innerHTML = buildCGV(currentCompany);
+  document.getElementById('sig-card').style.display = 'none';
+  document.getElementById('btn-finaliser').style.display = 'none';
+}
+
+function onCgvChange() {
+  const checked = document.getElementById('cgv-check').checked;
+  document.getElementById('sig-card').style.display = checked ? '' : 'none';
+  document.getElementById('btn-finaliser').style.display = checked ? '' : 'none';
+  if (checked) initSig();
 }
 
 // ── Catalogue ─────────────────────────────────────────────────────────────────
-const FAMILIES=[{key:'tissus',label:'🧵 Tissus'},{key:'vitrerie',label:'🪟 Vitrerie'},{key:'menage',label:'🧹 Ménage'}];
-const SERVICES={
-  tissus:[{key:'tapis',label:'🧼 Tapis',unit:'m²',priceHT:40},{key:'moquette',label:'🧽 Moquette',unit:'m²',priceHT:15},{key:'rideaux',label:'🪟 Rideaux',unit:'m²',priceHT:16},{key:'canape',label:'🛋️ Canapé',unit:'place(s)',priceHT:130}],
-  vitrerie:[{key:'fenetres',label:'🪟 Fenêtres',unit:'fenêtre(s)',priceHT:20},{key:'miroirs',label:'🪞 Miroirs',unit:'miroir(s)',priceHT:8}],
-  menage:[{key:'menage',label:'🧹 Ménage',unit:'h',priceHT:60,minQty:4}],
+const FAMILIES = [
+  { key: 'tissus', label: '🧵 Tissus' },
+  { key: 'vitrerie', label: '🪟 Vitrerie' },
+  { key: 'menage', label: '🧹 Ménage' }
+];
+const SERVICES = {
+  tissus: [
+    { key: 'tapis', label: '🧼 Tapis', unit: 'm²', priceHT: 40 },
+    { key: 'moquette', label: '🧽 Moquette', unit: 'm²', priceHT: 15 },
+    { key: 'rideaux', label: '🪟 Rideaux', unit: 'm²', priceHT: 16 },
+    { key: 'canape', label: '🛋️ Canapé', unit: 'place(s)', priceHT: 130, priceHT2: 110 }, // priceHT2 = tarif 2+ places
+  ],
+  vitrerie: [
+    { key: 'fenetres', label: '🪟 Fenêtres', unit: 'fenêtre(s)', priceHT: 20 },
+    { key: 'miroirs', label: '🪞 Miroirs', unit: 'miroir(s)', priceHT: 8 },
+  ],
+  menage: [
+    { key: 'menage', label: '🧹 Ménage', unit: 'h', priceHT: 60, minQty: 4 },
+  ],
 };
-const HEIGHTS=[{key:'normal',label:'Normale (2,5m)',val:2.5},{key:'haussmann',label:'Haussmannien +20%',val:3.2},{key:'other',label:'Autre hauteur',val:null}];
-const LTYPES=['Studio','2 pièces','3 pièces','4 pièces et +','Maison','Château','Bureaux / local','Post-construction','Parties communes'];
+const HEIGHTS = [
+  { key: 'normal', label: 'Normale (2,5m)', val: 2.5 },
+  { key: 'haussmann', label: 'Haussmannien +30%', val: 3.2 },
+  { key: 'other', label: 'Autre hauteur', val: null },
+];
+const LTYPES = ['Studio', '2 pièces', '3 pièces', '4 pièces et +', 'Maison', 'Château', 'Bureaux / local'];
+const SUBJECTS = ['RE travaux', 'RE déménagement', 'Vitrerie', 'Tissus d\'ameublement', 'Sols', 'Ménage'];
 
-// ── État global ───────────────────────────────────────────────────────────────
-let quoteType='classic'; // 'classic' | 'custom'
-let CF='tissus',CS='tapis',CH='normal',SL='';
-let items=[]; // devis classique
-let pieces=[]; // devis personnalisé [{id,name,hours}]
-let transportAdded=false;
-let sigDrawing=false,lastX=0,lastY=0;
-let devisCounter=parseInt(localStorage.getItem('lmp_counter')||'0');
-function genRef(){return 'LMP-'+new Date().getFullYear()+'-'+String(devisCounter+1).padStart(3,'0');}
-let currentRef=genRef();
+// ── État ──────────────────────────────────────────────────────────────────────
+let currentCompany = null;
+let quoteType = 'classic';
+let CF = 'tissus', CS = 'tapis', CH = 'normal', SL = '', SS = []; // SS = subjects (multi)
+let items = [];
+let pieces = [];
+let photos = []; // [{id, dataUrl, label}]
+let sigDrawing = false, lastX = 0, lastY = 0;
+let devisCounter = parseInt(localStorage.getItem('lmp_counter') || '0');
+function genRef() {
+  const co = currentCompany === 'fraioli' ? 'FRA' : 'LMP';
+  return co + '-' + new Date().getFullYear() + '-' + String(devisCounter + 1).padStart(3, '0');
+}
+let currentRef = '';
 
-function fmt(n){n=typeof n==='number'?n:parseFloat(n)||0;return new Intl.NumberFormat('fr-FR',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' €';}
-function pn(v){if(!v)return 0;const c=v.toString().replace(',','.').replace(/[^0-9.]/g,'');const n=parseFloat(c);return isNaN(n)?0:n;}
-function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16);});}
+function fmt(n) { n = typeof n === 'number' ? n : parseFloat(n) || 0; return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n) + ' €'; }
+function pn(v) { if (!v) return 0; const c = v.toString().replace(',', '.').replace(/[^0-9.]/g, ''); const n = parseFloat(c); return isNaN(n) ? 0 : n; }
+function uuid() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); }
+
+// ── Sélection société ─────────────────────────────────────────────────────────
+function selectCompany(key) {
+  currentCompany = key;
+  const co = COMPANIES[key];
+  document.querySelectorAll('.co-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.${key}-btn`).classList.add('active');
+  // Mise à jour home header
+  document.getElementById('home-hd').className = `home-hd ${key}`;
+  document.getElementById('home-brand').textContent = co.legal || '';
+  document.getElementById('home-title').textContent = co.name;
+  document.getElementById('home-sub').textContent = 'Application Vasco';
+  // Afficher boutons
+  ['btn-new-devis', 'btn-dashboard', 'btn-history', 'btn-bo', 'stats-block'].forEach(id => {
+    document.getElementById(id).style.display = '';
+  });
+  updateStats();
+}
 
 // ── Navigation ────────────────────────────────────────────────────────────────
-function go(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  if(id==='screen-home')updateStats();
-  if(id==='screen-prestations')renderCatalogue();
-  if(id==='screen-recap')renderRecap();
-  if(id==='screen-signature')initSig();
-  if(id==='screen-history')renderHistory();
-  if(id==='screen-backoffice')loadBackoffice();
+  window.scrollTo(0, 0);
+  if (id === 'screen-home') updateStats();
+  if (id === 'screen-prestations') renderCatalogue();
+  if (id === 'screen-recap') renderRecap();
+  if (id === 'screen-pdf') renderPDFPreview();
+  if (id === 'screen-photos') renderPhotos();
+  if (id === 'screen-signature') { initSig(); resetCgv(); }
+  if (id === 'screen-history') renderHistory();
+  if (id === 'screen-backoffice') loadBackoffice();
+  if (id === 'screen-dashboard') loadDashboard();
 }
 
-function selectType(t){
-  quoteType=t;
-  go('screen-client');
-}
+function selectType(t) { quoteType = t; go('screen-client'); }
 
-function goStep2(){
-  const name=document.getElementById('c-name').value.trim();
-  if(!name){alert('Veuillez saisir le nom du client.');return;}
-  const addr=document.getElementById('c-address').value.trim();
-  if(!addr){alert('Veuillez saisir l\'adresse du bien.');return;}
-  if(quoteType==='classic')go('screen-prestations');
+function goStep2() {
+  if (!document.getElementById('c-name').value.trim()) { alert('Veuillez saisir le nom du client.'); return; }
+  if (!document.getElementById('c-address').value.trim()) { alert('Veuillez saisir l\'adresse du bien.'); return; }
+  if (quoteType === 'classic') go('screen-prestations');
   else go('screen-custom');
 }
-
-function goStep3(){
-  if(!items.length){alert('Ajoutez au moins une prestation.');return;}
-  go('screen-recap');
-}
-
-function goStep3Custom(){
-  const validPieces=pieces.filter(p=>p.hours>0);
-  if(!validPieces.length){alert('Ajoutez au moins une pièce avec des heures.');return;}
-  go('screen-recap');
-}
-
-function goRecapBack(){
-  if(quoteType==='classic')go('screen-prestations');
-  else go('screen-custom');
-}
+function goStep3() { if (!items.length) { alert('Ajoutez au moins une prestation.'); return; } go('screen-recap'); }
+function goStep3Custom() { if (!getCustomItems().length) { alert('Ajoutez au moins une pièce avec des heures.'); return; } go('screen-recap'); }
+function goRecapBack() { if (quoteType === 'classic') go('screen-prestations'); else go('screen-custom'); }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
-function lh(){try{return JSON.parse(localStorage.getItem('lmp_history')||'[]');}catch(e){return[];}}
-function sh(h){localStorage.setItem('lmp_history',JSON.stringify(h));}
-function updateStats(){
-  const h=lh(),signed=h.filter(x=>x.status==='signed');
-  const ca=signed.reduce((s,x)=>s+(x.totalTTC||0),0);
-  document.getElementById('stat-count').textContent=h.length;
-  document.getElementById('stat-signed').textContent=signed.length;
-  document.getElementById('stat-ca').textContent=Math.round(ca)+'€';
+function lh() { try { return JSON.parse(localStorage.getItem('lmp_history') || '[]'); } catch (e) { return []; } }
+function sh(h) { localStorage.setItem('lmp_history', JSON.stringify(h)); }
+function updateStats() {
+  if (!currentCompany) return;
+  const h = lh().filter(x => x.company === currentCompany);
+  const signed = h.filter(x => x.status === 'signed');
+  const ca = signed.reduce((s, x) => s + (x.totalTTC || 0), 0);
+  document.getElementById('stat-count').textContent = h.length;
+  document.getElementById('stat-signed').textContent = signed.length;
+  document.getElementById('stat-ca').textContent = Math.round(ca) + '€';
 }
 
 // ── Type pills ────────────────────────────────────────────────────────────────
-(function(){
-  const tg=document.getElementById('type-grid');
-  LTYPES.forEach(t=>{const b=document.createElement('button');b.className='type-pill';b.textContent=t;b.onclick=()=>{document.querySelectorAll('.type-pill').forEach(x=>x.classList.remove('active'));b.classList.add('active');SL=t;};tg.appendChild(b);});
+(function () {
+  const tg = document.getElementById('type-grid');
+  LTYPES.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'type-pill'; b.textContent = t;
+    b.onclick = () => { document.querySelectorAll('#type-grid .type-pill').forEach(x => x.classList.remove('active')); b.classList.add('active'); SL = t; };
+    tg.appendChild(b);
+  });
+  const sg = document.getElementById('subject-grid');
+  SUBJECTS.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'type-pill'; b.textContent = s;
+    b.onclick = () => {
+      b.classList.toggle('active');
+      SS = Array.from(document.querySelectorAll('#subject-grid .type-pill.active')).map(x => x.textContent);
+    };
+    sg.appendChild(b);
+  });
 })();
 
-// ── Autocomplete adresse (api.gouv.fr) ───────────────────────────────────────
-let addrTimeout=null;
-let selectedAddressData=null;
-
-function searchAddress(val){
+// ── Autocomplete adresse ──────────────────────────────────────────────────────
+let addrTimeout = null;
+function searchAddress(val) {
   clearTimeout(addrTimeout);
-  const list=document.getElementById('address-list');
-  document.getElementById('transport-banner').style.display='none';
-  selectedAddressData=null;
-  if(val.length<3){list.style.display='none';return;}
-  addrTimeout=setTimeout(async()=>{
-    try{
-      const r=await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(val)}&limit=6&country=fr`);
-      const d=await r.json();
-      const features=d.features||[];
-      if(!features.length){list.style.display='none';return;}
-      list.innerHTML=features.map((f,i)=>`<div class="autocomplete-item" onclick="selectAddress(${i})" data-idx="${i}">${f.properties.label}</div>`).join('');
-      list._features=features;
-      list.style.display='block';
-    }catch(e){list.style.display='none';}
-  },350);
+  const list = document.getElementById('address-list');
+  document.getElementById('transport-banner').style.display = 'none';
+  if (val.length < 3) { list.style.display = 'none'; return; }
+  addrTimeout = setTimeout(async () => {
+    try {
+      const r = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(val)}&limit=6`);
+      const d = await r.json();
+      const features = d.features || [];
+      if (!features.length) { list.style.display = 'none'; return; }
+      list.innerHTML = features.map((f, i) => `<div class="autocomplete-item" onclick="selectAddress(${i})">${f.properties.label}</div>`).join('');
+      list._features = features;
+      list.style.display = 'block';
+    } catch (e) { list.style.display = 'none'; }
+  }, 350);
 }
 
-function selectAddress(idx){
-  const list=document.getElementById('address-list');
-  const f=list._features[idx];
-  const label=f.properties.label;
-  document.getElementById('c-address').value=label;
-  list.style.display='none';
-  selectedAddressData=f.properties;
-  checkTransport(f.properties);
-}
-
-function checkTransport(props){
-  // Paris 6e = postcode 75006
-  const postcode=props.postcode||'';
-  const citycode=props.citycode||'';
-  const banner=document.getElementById('transport-banner');
-  const is6e=(postcode==='75006'||citycode==='75106');
-  if(!is6e&&postcode.startsWith('75')||!postcode.startsWith('75')){
-    // Hors 6e arrondissement
-    banner.style.display='block';
-    transportAdded=false;
-  } else {
-    banner.style.display='none';
-    transportAdded=false;
-    // Retirer frais si déjà ajoutés
-    items=items.filter(it=>it.serviceKey!=='transport');
-    renderItemsList();
+function selectAddress(idx) {
+  const list = document.getElementById('address-list');
+  const f = list._features[idx];
+  document.getElementById('c-address').value = f.properties.label;
+  list.style.display = 'none';
+  // Vérif 6e arrondissement
+  const pc = f.properties.postcode || '';
+  const is6e = pc === '75006' || f.properties.citycode === '75106';
+  const inParis = pc.startsWith('75');
+  if (!is6e) {
+    document.getElementById('transport-banner').style.display = 'block';
   }
 }
 
-function addTransport(){
-  // Supprimer si déjà présent
-  items=items.filter(it=>it.serviceKey!=='transport');
-  items.push({id:uuid(),familyKey:'deplacement',serviceKey:'transport',label:'🚗 Frais de déplacement',unit:'forfait',qty:1,priceHT:TRANSPORT_FEE,totalHT:TRANSPORT_FEE,isHaussmann:false,meta:{transport:true}});
-  transportAdded=true;
-  document.getElementById('transport-banner').style.display='none';
+function addTransport() {
+  items = items.filter(it => it.serviceKey !== 'transport');
+  items.push({ id: uuid(), familyKey: 'deplacement', serviceKey: 'transport', label: '🚗 Frais de déplacement', unit: 'forfait', qty: 1, priceHT: TRANSPORT_FEE, totalHT: TRANSPORT_FEE, isHaussmann: false, meta: { transport: true } });
+  document.getElementById('transport-banner').style.display = 'none';
   renderItemsList();
 }
+function skipTransport() { document.getElementById('transport-banner').style.display = 'none'; }
 
-function skipTransport(){
-  document.getElementById('transport-banner').style.display='none';
-  transportAdded=false;
-}
-
-// Fermer dropdown si clic ailleurs
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.autocomplete-wrap')){
-    document.getElementById('address-list').style.display='none';
-  }
+document.addEventListener('click', e => {
+  if (!e.target.closest('.autocomplete-wrap')) document.getElementById('address-list').style.display = 'none';
 });
 
-// ── Catalogue classique ───────────────────────────────────────────────────────
-function getSvc(){return(SERVICES[CF]||[]).find(s=>s.key===CS);}
-function getPrice(){const svc=getSvc();if(!svc)return 0;return(CF==='vitrerie'&&CH==='haussmann')?svc.priceHT*HAUS:svc.priceHT;}
+// ── Prix canapé variable ──────────────────────────────────────────────────────
+function getCanapePrix(qty) {
+  // 1 place = 130€, 2+ places = 110€/place
+  return qty >= 2 ? 110 : 130;
+}
 
-function renderCatalogue(){
-  const fr=document.getElementById('family-row');fr.innerHTML='';
-  FAMILIES.forEach(f=>{const b=document.createElement('button');b.className='family-btn'+(f.key===CF?' active':'');b.textContent=f.label;b.onclick=()=>{CF=f.key;CS=(SERVICES[f.key]||[])[0]?.key||'';CH='normal';renderCatalogue();};fr.appendChild(b);});
-  const sg=document.getElementById('svc-grid');sg.innerHTML='';
-  (SERVICES[CF]||[]).forEach(sv=>{const b=document.createElement('div');b.className='svc-btn'+(sv.key===CS?' active':'');b.innerHTML=`<div class="svc-name">${sv.label}</div><div class="svc-price">${fmt(sv.priceHT)} HT / ${sv.unit}</div>`;b.onclick=()=>{CS=sv.key;renderCatalogue();};sg.appendChild(b);});
-  const hc=document.getElementById('hauteur-card'),hg=document.getElementById('height-grid');
-  if(CF==='vitrerie'){
-    hc.style.display='';hg.innerHTML='';
-    HEIGHTS.forEach(h=>{const b=document.createElement('button');b.className='type-pill'+(h.key===CH?' active':'');b.textContent=h.label;b.onclick=()=>{CH=h.key;document.getElementById('height-other-field').style.display=h.key==='other'?'':'none';renderCatalogue();};hg.appendChild(b);});
-    document.getElementById('height-other-field').style.display=CH==='other'?'':'none';
-  }else{hc.style.display='none';CH='normal';}
-  const svc=getSvc();document.getElementById('qty-title').textContent=`Quantité (${svc?svc.unit:''})`;
+// ── Catalogue classique ───────────────────────────────────────────────────────
+function getSvc() { return (SERVICES[CF] || []).find(s => s.key === CS); }
+function getPrice(qtyOverride) {
+  const svc = getSvc(); if (!svc) return 0;
+  const qty = qtyOverride !== undefined ? qtyOverride : pn(document.getElementById('qty-input').value);
+  let base = svc.key === 'canape' ? getCanapePrix(qty) : svc.priceHT;
+  return (CF === 'vitrerie' && CH === 'haussmann') ? base * HAUS_MULT : base;
+}
+
+function renderCatalogue() {
+  const fr = document.getElementById('family-row'); fr.innerHTML = '';
+  FAMILIES.forEach(f => {
+    const b = document.createElement('button');
+    b.className = 'family-btn' + (f.key === CF ? ' active' : ''); b.textContent = f.label;
+    b.onclick = () => { CF = f.key; CS = (SERVICES[f.key] || [])[0]?.key || ''; CH = 'normal'; renderCatalogue(); };
+    fr.appendChild(b);
+  });
+  const sg = document.getElementById('svc-grid'); sg.innerHTML = '';
+  (SERVICES[CF] || []).forEach(sv => {
+    const b = document.createElement('div');
+    b.className = 'svc-btn' + (sv.key === CS ? ' active' : '');
+    const priceLabel = sv.key === 'canape' ? '130 € / 110 € HT / place' : `${fmt(sv.priceHT)} HT / ${sv.unit}`;
+    b.innerHTML = `<div class="svc-name">${sv.label}</div><div class="svc-price">${priceLabel}</div>`;
+    b.onclick = () => { CS = sv.key; renderCatalogue(); };
+    sg.appendChild(b);
+  });
+  const hc = document.getElementById('hauteur-card'), hg = document.getElementById('height-grid');
+  if (CF === 'vitrerie') {
+    hc.style.display = ''; hg.innerHTML = '';
+    HEIGHTS.forEach(h => {
+      const b = document.createElement('button');
+      b.className = 'type-pill' + (h.key === CH ? ' active' : ''); b.textContent = h.label;
+      b.onclick = () => { CH = h.key; document.getElementById('height-other-field').style.display = h.key === 'other' ? '' : 'none'; renderCatalogue(); };
+      hg.appendChild(b);
+    });
+    document.getElementById('height-other-field').style.display = CH === 'other' ? '' : 'none';
+  } else { hc.style.display = 'none'; CH = 'normal'; }
+  const svc = getSvc();
+  document.getElementById('qty-title').textContent = `Quantité (${svc ? svc.unit : ''})`;
   updateMiniSum();
 }
 
-document.getElementById('qty-input').addEventListener('input',updateMiniSum);
-function updateMiniSum(){
-  const qty=pn(document.getElementById('qty-input').value),svc=getSvc(),price=getPrice();
-  const ms=document.getElementById('mini-sum');
-  if(qty>0&&svc){ms.style.display='flex';const h=(CF==='vitrerie'&&CH==='haussmann')?' (+20% Haussmann)':'';document.getElementById('mini-sum-txt').textContent=`${fmt(price)} × ${qty} ${svc.unit}${h}`;document.getElementById('mini-sum-val').textContent=fmt(qty*price)+' HT';}
-  else ms.style.display='none';
+document.getElementById('qty-input').addEventListener('input', updateMiniSum);
+function updateMiniSum() {
+  const qty = pn(document.getElementById('qty-input').value);
+  const svc = getSvc(); const price = getPrice(qty);
+  const ms = document.getElementById('mini-sum');
+  if (qty > 0 && svc) {
+    ms.style.display = 'flex';
+    let info = `${fmt(price)} × ${qty} ${svc.unit}`;
+    if (svc.key === 'canape' && qty >= 2) info += ' (110 €/place)';
+    if (CF === 'vitrerie' && CH === 'haussmann') info += ' (+30% Haussmann)';
+    document.getElementById('mini-sum-txt').textContent = info;
+    document.getElementById('mini-sum-val').textContent = fmt(qty * price) + ' HT';
+  } else ms.style.display = 'none';
 }
 
-function addItem(){
-  const svc=getSvc();if(!svc)return;
-  const qty=pn(document.getElementById('qty-input').value);
-  if(!qty||qty<=0){alert(`Indique une quantité en ${svc.unit}.`);return;}
-  if(CF==='menage'&&qty<(svc.minQty||4)){alert(`Le ménage est au minimum de ${svc.minQty||4} heures.`);return;}
-  if(CF==='vitrerie'&&CH==='other'){const hv=pn(document.getElementById('height-other-input').value);if(!hv){alert('Indique la hauteur en mètres.');return;}}
-  const price=getPrice(),isH=CF==='vitrerie'&&CH==='haussmann';
-  const hPreset=HEIGHTS.find(h=>h.key===CH);
-  const hVal=CH==='other'?pn(document.getElementById('height-other-input').value):(hPreset?.val||null);
-  items.push({id:uuid(),familyKey:CF,serviceKey:svc.key,label:svc.label,unit:svc.unit,qty,priceHT:price,totalHT:qty*price,isHaussmann:isH,heightMeters:hVal,meta:{effective_price_ht:price,...(CF==='vitrerie'?{heightPreset:CH,heightMeters:hVal,haussmannMultiplierApplied:isH?HAUS:1}:{})}});
-  document.getElementById('qty-input').value='';document.getElementById('mini-sum').style.display='none';
+function addItem() {
+  const svc = getSvc(); if (!svc) return;
+  const qty = pn(document.getElementById('qty-input').value);
+  if (!qty || qty <= 0) { alert(`Indique une quantité en ${svc.unit}.`); return; }
+  if (CF === 'menage' && qty < (svc.minQty || 4)) { alert(`Le ménage est au minimum de ${svc.minQty || 4} heures.`); return; }
+  if (CF === 'vitrerie' && CH === 'other') { if (!pn(document.getElementById('height-other-input').value)) { alert('Indique la hauteur.'); return; } }
+  const price = getPrice(qty);
+  const isH = CF === 'vitrerie' && CH === 'haussmann';
+  const hPreset = HEIGHTS.find(h => h.key === CH);
+  const hVal = CH === 'other' ? pn(document.getElementById('height-other-input').value) : (hPreset?.val || null);
+  items.push({
+    id: uuid(), familyKey: CF, serviceKey: svc.key, label: svc.label,
+    unit: svc.unit, qty, priceHT: price, totalHT: qty * price, isHaussmann: isH, heightMeters: hVal,
+    meta: { effective_price_ht: price, ...(CF === 'vitrerie' ? { heightPreset: CH, heightMeters: hVal, haussmannMultiplierApplied: isH ? HAUS_MULT : 1 } : {}) }
+  });
+  document.getElementById('qty-input').value = '';
+  document.getElementById('mini-sum').style.display = 'none';
   renderItemsList();
 }
-function removeItem(id){items=items.filter(it=>it.id!==id);renderItemsList();}
+function removeItem(id) { items = items.filter(it => it.id !== id); renderItemsList(); }
 
-function renderItemsList(){
-  const list=document.getElementById('items-list'),card=document.getElementById('items-card');
-  if(!items.length){card.style.display='none';return;}card.style.display='';
-  list.innerHTML=items.map(it=>{const h=it.isHaussmann?'<span style="color:#f97316;font-size:11px;margin-left:4px">+20%</span>':'';return`<div class="item-line"><div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-right"><div class="il-total">${fmt(it.totalHT)} HT</div><span class="il-del" onclick="removeItem('${it.id}')">🗑️</span></div></div>`;}).join('');
+function renderItemsList() {
+  const list = document.getElementById('items-list'), card = document.getElementById('items-card');
+  if (!items.length) { card.style.display = 'none'; return; } card.style.display = '';
+  list.innerHTML = items.map(it => {
+    const h = it.isHaussmann ? '<span style="color:#f97316;font-size:11px;margin-left:4px">+30%</span>' : '';
+    return `<div class="item-line"><div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-right"><div class="il-total">${fmt(it.totalHT)} HT</div><span class="il-del" onclick="removeItem('${it.id}')">🗑️</span></div></div>`;
+  }).join('');
   renderTotals();
 }
 
-function getTotals(){
-  const subtotal=items.reduce((s,it)=>s+it.totalHT,0);
-  const disc=Math.min(50,Math.max(0,pn(document.getElementById('discount').value)));
-  const totalHT=Math.round(subtotal*(1-disc/100)*100)/100;
-  const tva=Math.round(totalHT*VAT*100)/100;
-  const totalTTC=Math.round((totalHT+tva)*100)/100;
-  return{subtotal,disc,totalHT,tva,totalTTC};
+function getTotals() {
+  const subtotal = items.reduce((s, it) => s + it.totalHT, 0);
+  const disc = Math.min(50, Math.max(0, pn(document.getElementById('discount').value)));
+  const totalHT = Math.round(subtotal * (1 - disc / 100) * 100) / 100;
+  const tva = Math.round(totalHT * VAT * 100) / 100;
+  const totalTTC = Math.round((totalHT + tva) * 100) / 100;
+  return { subtotal, disc, totalHT, tva, totalTTC };
 }
-function renderTotals(){
-  const{subtotal,disc,totalHT,tva,totalTTC}=getTotals();
-  document.getElementById('totals-box').innerHTML=`${disc>0?`<div class="tot-row green"><span class="tot-lbl">Remise ${disc}%</span><span class="tot-val">−${fmt(subtotal-totalHT)}</span></div>`:''}<div class="tot-row"><span class="tot-lbl">Total HT</span><span class="tot-val">${fmt(totalHT)}</span></div><div class="tot-row"><span class="tot-lbl">TVA (20%)</span><span class="tot-val">${fmt(tva)}</span></div><div class="tot-row final"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>`;
+function renderTotals() {
+  const { subtotal, disc, totalHT, tva, totalTTC } = getTotals();
+  document.getElementById('totals-box').innerHTML = totalsHTML(subtotal, disc, totalHT, tva, totalTTC);
+}
+function totalsHTML(subtotal, disc, totalHT, tva, totalTTC) {
+  return `${disc > 0 ? `<div class="tot-row green"><span class="tot-lbl">Remise ${disc}%</span><span class="tot-val">−${fmt(subtotal - totalHT)}</span></div>` : ''}<div class="tot-row"><span class="tot-lbl">Total HT</span><span class="tot-val">${fmt(totalHT)}</span></div><div class="tot-row"><span class="tot-lbl">TVA (20%)</span><span class="tot-val">${fmt(tva)}</span></div><div class="tot-row final"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>`;
 }
 
-// ── Devis personnalisé — pièces ───────────────────────────────────────────────
-function addPiece(){
-  const nameEl=document.getElementById('new-piece-name');
-  const name=nameEl.value.trim();
-  if(!name){alert('Saisissez le nom de la pièce.');return;}
-  pieces.push({id:uuid(),name,hours:0});
-  nameEl.value='';
+// ── Pièces ────────────────────────────────────────────────────────────────────
+function addPiece() {
+  const el = document.getElementById('new-piece-name');
+  const name = el.value.trim();
+  if (!name) { alert('Saisissez le nom de la pièce.'); return; }
+  pieces.push({ id: uuid(), name, hours: 0 });
+  el.value = '';
   renderPieces();
 }
+function updatePieceHours(id, val) { const p = pieces.find(p => p.id === id); if (p) p.hours = pn(val); renderCustomTotals(); }
+function removePiece(id) { pieces = pieces.filter(p => p.id !== id); renderPieces(); }
 
-function updatePieceHours(id,val){
-  const p=pieces.find(p=>p.id===id);
-  if(p){p.hours=pn(val);}
+function renderPieces() {
+  const list = document.getElementById('pieces-list');
+  const rate = pn(document.getElementById('custom-rate').value) || 60;
+  if (!pieces.length) { list.innerHTML = '<p style="font-size:13px;color:#6b7280;padding:8px 0 12px">Aucune pièce ajoutée.</p>'; renderCustomTotals(); return; }
+  list.innerHTML = pieces.map(p => `<div class="piece-row">
+    <div class="piece-name">${p.name}</div>
+    <input class="piece-hours" type="number" min="0" step="0.5" placeholder="0h" value="${p.hours || ''}" oninput="updatePieceHours('${p.id}',this.value)">
+    <div class="piece-total">${p.hours > 0 ? fmt(p.hours * rate) + ' HT' : '—'}</div>
+    <span class="piece-del" onclick="removePiece('${p.id}')">🗑️</span>
+  </div>`).join('');
   renderCustomTotals();
 }
 
-function removePiece(id){
-  pieces=pieces.filter(p=>p.id!==id);
-  renderPieces();
-}
-
-function renderPieces(){
-  const list=document.getElementById('pieces-list');
-  if(!pieces.length){list.innerHTML='<p style="font-size:13px;color:#6b7280;padding:8px 0 12px">Aucune pièce ajoutée.</p>';renderCustomTotals();return;}
-  const rate=pn(document.getElementById('custom-rate').value)||60;
-  list.innerHTML=pieces.map(p=>`
-    <div class="piece-row">
-      <div class="piece-name">${p.name}</div>
-      <input class="piece-hours" type="number" min="0" step="0.5" placeholder="0h" value="${p.hours||''}" oninput="updatePieceHours('${p.id}',this.value)" onchange="renderPieces()">
-      <div class="piece-total">${p.hours>0?fmt(p.hours*rate)+' HT':'—'}</div>
-      <span class="piece-del" onclick="removePiece('${p.id}')">🗑️</span>
-    </div>`).join('');
-  renderCustomTotals();
-}
-
-function getCustomItems(){
-  const rate=pn(document.getElementById('custom-rate').value)||60;
-  return pieces.filter(p=>p.hours>0).map(p=>({
-    id:p.id,familyKey:'menage',serviceKey:'menage_perso',
-    label:`🏠 ${p.name}`,unit:'h',qty:p.hours,
-    priceHT:rate,totalHT:p.hours*rate,isHaussmann:false,
-    meta:{custom:true,rate}
+function getCustomItems() {
+  const rate = pn(document.getElementById('custom-rate').value) || 60;
+  const pieceItems = pieces.filter(p => p.hours > 0).map(p => ({
+    id: p.id, familyKey: 'menage', serviceKey: 'menage_perso',
+    label: `🏠 ${p.name}`, unit: 'h', qty: p.hours,
+    priceHT: rate, totalHT: p.hours * rate, isHaussmann: false, meta: { custom: true, rate }
   }));
+  const transport = items.filter(it => it.serviceKey === 'transport');
+  return [...pieceItems, ...transport];
 }
 
-function getCustomTotals(){
-  const cItems=getCustomItems();
-  // Ajouter transport si présent dans items
-  const allItems=[...cItems,...items.filter(it=>it.serviceKey==='transport')];
-  const subtotal=allItems.reduce((s,it)=>s+it.totalHT,0);
-  const disc=Math.min(50,Math.max(0,pn(document.getElementById('custom-discount').value)));
-  const totalHT=Math.round(subtotal*(1-disc/100)*100)/100;
-  const tva=Math.round(totalHT*VAT*100)/100;
-  const totalTTC=Math.round((totalHT+tva)*100)/100;
-  return{subtotal,disc,totalHT,tva,totalTTC,allItems};
+function getCustomTotals() {
+  const allItems = getCustomItems();
+  const subtotal = allItems.reduce((s, it) => s + it.totalHT, 0);
+  const disc = Math.min(50, Math.max(0, pn(document.getElementById('custom-discount').value)));
+  const totalHT = Math.round(subtotal * (1 - disc / 100) * 100) / 100;
+  const tva = Math.round(totalHT * VAT * 100) / 100;
+  const totalTTC = Math.round((totalHT + tva) * 100) / 100;
+  return { subtotal, disc, totalHT, tva, totalTTC, allItems };
 }
 
-function renderCustomTotals(){
-  const{subtotal,disc,totalHT,tva,totalTTC,allItems}=getCustomTotals();
-  const card=document.getElementById('custom-totals-card');
-  if(!allItems.length){card.style.display='none';return;}
-  card.style.display='';
-  document.getElementById('custom-items-recap').innerHTML=allItems.map(it=>`<div class="item-line"><div class="il-left"><div class="il-name">${it.label}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-total">${fmt(it.totalHT)} HT</div></div>`).join('');
-  document.getElementById('custom-totals-box').innerHTML=`${disc>0?`<div class="tot-row green"><span class="tot-lbl">Remise ${disc}%</span><span class="tot-val">−${fmt(subtotal-totalHT)}</span></div>`:''}<div class="tot-row"><span class="tot-lbl">Total HT</span><span class="tot-val">${fmt(totalHT)}</span></div><div class="tot-row"><span class="tot-lbl">TVA (20%)</span><span class="tot-val">${fmt(tva)}</span></div><div class="tot-row final"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>`;
+function renderCustomTotals() {
+  const { subtotal, disc, totalHT, tva, totalTTC, allItems } = getCustomTotals();
+  const card = document.getElementById('custom-totals-card');
+  if (!allItems.length) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  document.getElementById('custom-items-recap').innerHTML = allItems.map(it => `<div class="item-line"><div class="il-left"><div class="il-name">${it.label}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-total">${fmt(it.totalHT)} HT</div></div>`).join('');
+  document.getElementById('custom-totals-box').innerHTML = totalsHTML(subtotal, disc, totalHT, tva, totalTTC);
 }
 
 // ── Recap ─────────────────────────────────────────────────────────────────────
-function renderRecap(){
-  currentRef=genRef();
-  const name=document.getElementById('c-name').value,addr=document.getElementById('c-address').value;
-  const phone=document.getElementById('c-phone').value,email=document.getElementById('c-email').value;
-  const surf=document.getElementById('c-surface').value;
-  const isCustom=quoteType==='custom';
-  const freq=document.getElementById(isCustom?'custom-frequence':'frequence').value;
-  const notes=document.getElementById(isCustom?'custom-notes':'notes').value;
+function renderRecap() {
+  currentRef = genRef();
+  const co = COMPANIES[currentCompany] || COMPANIES.lmp;
+  const isCustom = quoteType === 'custom';
+  const name = document.getElementById('c-name').value;
+  const addr = document.getElementById('c-address').value;
+  const phone = document.getElementById('c-phone').value;
+  const email = document.getElementById('c-email').value;
+  const superficie = document.getElementById('c-superficie').value;
+  const etage = document.getElementById('c-etage').value;
+  const ascenseur = document.getElementById('c-ascenseur').value;
+  const freq = document.getElementById(isCustom ? 'custom-frequence' : 'frequence').value;
+  const notes = document.getElementById(isCustom ? 'custom-notes' : 'notes').value;
 
-  const allItems=isCustom?getCustomTotals().allItems:items;
-  const{subtotal,disc,totalHT,tva,totalTTC}=isCustom?getCustomTotals():getTotals();
+  const allItems = isCustom ? getCustomTotals().allItems : items;
+  const { subtotal, disc, totalHT, tva, totalTTC } = isCustom ? getCustomTotals() : getTotals();
 
-  document.getElementById('recap-client-card').innerHTML=`
+  let accessInfo = [etage ? `Étage ${etage}` : '', ascenseur ? `Ascenseur : ${ascenseur}` : ''].filter(Boolean).join(' • ');
+
+  document.getElementById('recap-client-card').innerHTML = `
     <div class="card-title">Client</div>
     <div class="recap-name">${name}</div>
-    ${addr?`<div class="recap-muted">${addr}</div>`:''}
-    ${phone?`<div class="recap-muted">${phone}</div>`:''}
-    ${email?`<div class="recap-muted">${email}</div>`:''}
-    ${SL?`<div class="recap-muted">${SL}${surf?' • '+surf+' m²':''}</div>`:''}
+    ${addr ? `<div class="recap-muted">${addr}</div>` : ''}
+    ${superficie ? `<div class="recap-muted">Superficie : ${superficie} m²</div>` : ''}
+    ${accessInfo ? `<div class="recap-muted">${accessInfo}</div>` : ''}
+    ${phone ? `<div class="recap-muted">${phone}</div>` : ''}
+    ${email ? `<div class="recap-muted">${email}</div>` : ''}
+    ${SL ? `<div class="recap-muted">${SL}</div>` : ''}
+    ${SS.length ? `<div class="recap-muted" style="color:#f97316;font-weight:600">Sujet : ${SS.join(', ')}</div>` : ''}
+    ${document.getElementById('c-date-intervention').value ? `<div class="recap-muted" style="color:#22c55e;font-weight:600">📅 Intervention : ${new Date(document.getElementById('c-date-intervention').value).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</div>` : ''}
     <div class="recap-muted" style="margin-top:6px">${freq}</div>
-    ${notes?`<div class="recap-muted" style="font-style:italic;margin-top:4px">${notes}</div>`:''}
+    ${notes ? `<div class="recap-muted" style="font-style:italic;margin-top:4px">${notes}</div>` : ''}
     <div class="devis-ref">Réf. ${currentRef}</div>
-    <span class="devis-type-badge ${isCustom?'badge-custom':'badge-classic'}">${isCustom?'🏠 Devis personnalisé':'🧾 Devis classique'}</span>`;
+    <span class="devis-type-badge ${currentCompany === 'fraioli' ? 'badge-fraioli' : 'badge-lmp'}">${co.name}</span>
+    <span class="devis-type-badge ${isCustom ? 'badge-custom' : 'badge-classic'}">${isCustom ? '🏠 Personnalisé' : '🧾 Classique'}</span>`;
 
-  document.getElementById('recap-items-card').innerHTML=`
+  document.getElementById('recap-items-card').innerHTML = `
     <div class="card-title">Prestations</div>
-    ${allItems.map(it=>{const h=it.isHaussmann?'<span style="color:#f97316;font-size:11px;margin-left:4px">+20%</span>':'';return`<div class="item-line"><div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-total">${fmt(it.totalHT)} HT</div></div>`;}).join('')}
-    <div class="totals-box" style="margin-top:14px">
-      ${disc>0?`<div class="tot-row green"><span class="tot-lbl">Remise ${disc}%</span><span class="tot-val">−${fmt(subtotal-totalHT)}</span></div>`:''}
-      <div class="tot-row"><span class="tot-lbl">Total HT</span><span class="tot-val">${fmt(totalHT)}</span></div>
-      <div class="tot-row"><span class="tot-lbl">TVA (20%)</span><span class="tot-val">${fmt(tva)}</span></div>
-      <div class="tot-row final"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>
-    </div>`;
+    ${allItems.map(it => { const h = it.isHaussmann ? '<span style="color:#f97316;font-size:11px;margin-left:4px">+30%</span>' : ''; return `<div class="item-line"><div class="il-left"><div class="il-name">${it.label}${h}</div><div class="il-sub">${it.qty} ${it.unit} × ${fmt(it.priceHT)}</div></div><div class="il-total">${fmt(it.totalHT)} HT</div></div>`; }).join('')}
+    <div class="totals-box" style="margin-top:14px">${totalsHTML(subtotal, disc, totalHT, tva, totalTTC)}</div>`;
 }
 
 // ── Signature ─────────────────────────────────────────────────────────────────
-function initSig(){
-  const isCustom=quoteType==='custom';
-  const{totalTTC}=isCustom?getCustomTotals():getTotals();
-  const name=document.getElementById('c-name').value;
-  document.getElementById('sig-recap-mini').innerHTML=`<div class="card-title">Devis ${currentRef}</div><div class="recap-name">${name}</div><div class="tot-row final" style="margin-top:10px"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>`;
-  const zone=document.getElementById('sig-zone');
-  const nc=document.createElement('canvas');
-  nc.className='sig-canvas';nc.id='sig-canvas';
-  nc.width=zone.clientWidth;nc.height=zone.clientHeight;
-  const old=zone.querySelector('canvas');
-  if(old)zone.replaceChild(nc,old);else zone.appendChild(nc);
-  const ctx=nc.getContext('2d');
-  ctx.fillStyle='#f0f0f0';ctx.fillRect(0,0,nc.width,nc.height);
-  ctx.strokeStyle='#111';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
-  function pos(e){const r=nc.getBoundingClientRect();const src=e.touches?e.touches[0]:e;return{x:src.clientX-r.left,y:src.clientY-r.top};}
-  function start(e){e.preventDefault();sigDrawing=true;const p=pos(e);lastX=p.x;lastY=p.y;document.getElementById('sig-hint').style.display='none';}
-  function draw(e){e.preventDefault();if(!sigDrawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y;}
-  function stop(){sigDrawing=false;}
-  nc.addEventListener('mousedown',start);nc.addEventListener('touchstart',start,{passive:false});
-  nc.addEventListener('mousemove',draw);nc.addEventListener('touchmove',draw,{passive:false});
-  nc.addEventListener('mouseup',stop);nc.addEventListener('touchend',stop);
+function initSig() {
+  const isCustom = quoteType === 'custom';
+  const { totalTTC } = isCustom ? getCustomTotals() : getTotals();
+  const name = document.getElementById('c-name').value;
+  document.getElementById('sig-recap-mini').innerHTML = `<div class="card-title">Devis ${currentRef}</div><div class="recap-name">${name}</div><div class="tot-row final" style="margin-top:10px"><span class="tot-lbl">Total TTC</span><span class="tot-val">${fmt(totalTTC)}</span></div>`;
+  const zone = document.getElementById('sig-zone');
+  const nc = document.createElement('canvas');
+  nc.className = 'sig-canvas'; nc.id = 'sig-canvas';
+  nc.width = zone.clientWidth; nc.height = zone.clientHeight;
+  const old = zone.querySelector('canvas');
+  if (old) zone.replaceChild(nc, old); else zone.appendChild(nc);
+  const ctx = nc.getContext('2d');
+  ctx.fillStyle = '#f0f0f0'; ctx.fillRect(0, 0, nc.width, nc.height);
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  function pos(e) { const r = nc.getBoundingClientRect(); const src = e.touches ? e.touches[0] : e; return { x: src.clientX - r.left, y: src.clientY - r.top }; }
+  function start(e) { e.preventDefault(); sigDrawing = true; const p = pos(e); lastX = p.x; lastY = p.y; document.getElementById('sig-hint').style.display = 'none'; }
+  function draw(e) { e.preventDefault(); if (!sigDrawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }
+  function stop() { sigDrawing = false; }
+  nc.addEventListener('mousedown', start); nc.addEventListener('touchstart', start, { passive: false });
+  nc.addEventListener('mousemove', draw); nc.addEventListener('touchmove', draw, { passive: false });
+  nc.addEventListener('mouseup', stop); nc.addEventListener('touchend', stop);
 }
-function clearSig(){
-  const c=document.getElementById('sig-canvas');if(!c)return;
-  const ctx=c.getContext('2d');ctx.fillStyle='#f0f0f0';ctx.fillRect(0,0,c.width,c.height);
-  document.getElementById('sig-hint').style.display='';
+function clearSig() {
+  const c = document.getElementById('sig-canvas'); if (!c) return;
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#f0f0f0'; ctx.fillRect(0, 0, c.width, c.height);
+  document.getElementById('sig-hint').style.display = '';
 }
 
 // ── Finaliser ─────────────────────────────────────────────────────────────────
-async function finaliser(){
-  const btn=document.getElementById('btn-finaliser');
-  btn.disabled=true;btn.textContent='Enregistrement…';
+async function finaliser() {
+  const btn = document.getElementById('btn-finaliser');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
 
-  const isCustom=quoteType==='custom';
-  const name=document.getElementById('c-name').value,email=document.getElementById('c-email').value;
-  const addr=document.getElementById('c-address').value,phone=document.getElementById('c-phone').value;
-  const surf=document.getElementById('c-surface').value;
-  const freq=document.getElementById(isCustom?'custom-frequence':'frequence').value;
-  const notes=document.getElementById(isCustom?'custom-notes':'notes').value;
+  const isCustom = quoteType === 'custom';
+  const co = COMPANIES[currentCompany] || COMPANIES.lmp;
+  const name = document.getElementById('c-name').value;
+  const email = document.getElementById('c-email').value;
+  const addr = document.getElementById('c-address').value;
+  const phone = document.getElementById('c-phone').value;
+  const superficie = document.getElementById('c-superficie').value;
+  const freq = document.getElementById(isCustom ? 'custom-frequence' : 'frequence').value;
+  const notes = document.getElementById(isCustom ? 'custom-notes' : 'notes').value;
 
-  const allItems=isCustom?getCustomTotals().allItems:items;
-  const{subtotal,disc,totalHT,tva,totalTTC}=isCustom?getCustomTotals():getTotals();
-  const quoteId=uuid();
+  const allItems = isCustom ? getCustomTotals().allItems : items;
+  const { subtotal, disc, totalHT, tva, totalTTC } = isCustom ? getCustomTotals() : getTotals();
+  const quoteId = uuid();
 
   // Local
-  devisCounter++;localStorage.setItem('lmp_counter',devisCounter);
-  const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
-  const h=lh();h.unshift({name,date:dateStr,amount:Math.round(totalTTC)+'€',totalTTC,status:'signed',ref:currentRef,type:isCustom?'custom':'classic'});sh(h);
+  devisCounter++; localStorage.setItem('lmp_counter', devisCounter);
+  const dateStr = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  const h = lh();
+  h.unshift({ name, date: dateStr, amount: Math.round(totalTTC) + '€', totalTTC, status: 'signed', ref: currentRef, type: isCustom ? 'custom' : 'classic', company: currentCompany });
+  sh(h);
 
-  // Supabase
-  let syncOk=false;
-  try{
-    await sbInsert('quotes',[{id:quoteId,client_name:name,total_ht:totalHT,tva,total_ttc:totalTTC,pro_status:'terrain_signé'}]);
-    const dbItems=allItems.map(it=>({id:uuid(),quote_id:quoteId,famille_key:it.familyKey,service_key:it.serviceKey,label:it.label,qty:it.qty,unit:it.unit,price_ht:it.priceHT,total_ht:it.totalHT,photo_url:null,meta:it.meta||null}));
-    if(dbItems.length)await sbInsert('quote_items',dbItems);
-    syncOk=true;
-  }catch(e){console.warn('Supabase:',e);}
+  // Supabase — avec fallback hors ligne
+  let syncOk = false;
+  const quoteRow = { id: quoteId, client_name: name, total_ht: totalHT, tva, total_ttc: totalTTC, pro_status: 'terrain_signé' };
+  const dbItems = allItems.map(it => ({ id: uuid(), quote_id: quoteId, famille_key: it.familyKey, service_key: it.serviceKey, label: it.label, qty: it.qty, unit: it.unit, price_ht: it.priceHT, total_ht: it.totalHT, photo_url: null, meta: it.meta || null }));
+  if (navigator.onLine) {
+    try {
+      await sbInsert('quotes', [quoteRow]);
+      if (dbItems.length) await sbInsert('quote_items', dbItems);
+      syncOk = true;
+      // Notifier toute l'équipe
+      sendPushNotification(`Vasco — Nouveau devis signé`, `${name} • ${fmt(totalTTC)} TTC • ${currentRef}`);
+    } catch (e) {
+      console.warn('Supabase:', e);
+      addToOfflineQueue(quoteRow, dbItems);
+    }
+  } else {
+    addToOfflineQueue(quoteRow, dbItems);
+  }
 
-  // Email
-  const emailData={ref:currentRef,quoteType,name,address:addr,phone,email,logement:SL,surface:surf,freq,notes,items:allItems,subtotal,disc,totalHT,tva,totalTTC};
-  let emailOk=false;
-  if(email)emailOk=await sendEmail(email,`Votre devis La Maison Propre — Réf. ${currentRef}`,buildEmailHTML(emailData));
-  await sendEmail(FROM_EMAIL,`[Terrain] Nouveau devis — ${name} — ${currentRef}`,buildEmailHTML(emailData));
+  // Email via proxy Vercel
+  const dateIntervention = document.getElementById('c-date-intervention').value;
+  const emailData = { ref: currentRef, quoteType, company: currentCompany, name, address: addr, phone, email, superficie, logement: SL, subject: SS, freq, notes, items: allItems, subtotal, disc, totalHT, tva, totalTTC, dateIntervention, photosCount: photos.length };
+  const html = buildEmailHTML(emailData);
+  let emailOk = false;
+  let axonautOk = false;
+  // Email client + Axonaut (premier appel avec devisData)
+  if (email) {
+    const r = await sendEmail(email, `Votre devis ${co.name} — Réf. ${currentRef}`, html, currentCompany, emailData);
+    emailOk = r && r.success;
+    axonautOk = r && r.results && r.results.axonaut && r.results.axonaut.success;
+  } else {
+    // Pas d'email client mais on envoie quand même à Axonaut via email interne
+    const r = await sendEmail(co.email, `[Terrain] Nouveau devis — ${name} — ${currentRef}`, html, currentCompany, emailData);
+    axonautOk = r && r.results && r.results.axonaut && r.results.axonaut.success;
+  }
+  // Copie interne (sans devisData pour éviter doublon Axonaut)
+  if (email) await sendEmail(co.email, `[Terrain] Nouveau devis — ${name} — ${currentRef}`, html, currentCompany, null);
 
-  document.getElementById('success-msg').textContent=`Devis ${currentRef} signé pour ${name}.`;
-  const badges=[];
-  badges.push(`<span class="sync-badge"><span class="sync-dot ${syncOk?'':'error'}"></span>${syncOk?'Synchronisé':'Sauvegardé localement'}</span>`);
-  if(email)badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${emailOk?'#22c55e':'#f97316'}"></span>${emailOk?'Email envoyé':'Email non envoyé'}</span>`);
-  document.getElementById('sync-result').innerHTML=badges.join(' ');
-  btn.disabled=false;btn.textContent='Valider et envoyer →';
+  document.getElementById('success-msg').textContent = `Devis ${currentRef} signé pour ${name}.`;
+  const badges = [];
+  const offlineCount = getOfflineQueue().length;
+  badges.push(`<span class="sync-badge"><span class="sync-dot ${syncOk ? '' : 'error'}"></span>${syncOk ? 'Synchronisé ✓' : `Hors ligne — ${offlineCount} en attente`}</span>`);
+  if (email) badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${emailOk ? '#22c55e' : '#f97316'}"></span>${emailOk ? 'Email envoyé' : 'Email en attente'}</span>`);
+  badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${axonautOk ? '#22c55e' : '#f97316'}"></span>${axonautOk ? 'Axonaut ✓' : 'Axonaut en attente'}</span>`);
+  document.getElementById('sync-result').innerHTML = badges.join(' ');
+  btn.disabled = false; btn.textContent = 'Valider et envoyer →';
   go('screen-success');
 }
 
 // ── Nouveau devis ─────────────────────────────────────────────────────────────
-function nouveauDevis(){
-  quoteType='classic';items=[];pieces=[];transportAdded=false;
-  CF='tissus';CS='tapis';CH='normal';SL='';
-  ['c-name','c-address','c-phone','c-email','c-surface','c-etage','notes','custom-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['frequence','custom-frequence'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
-  const d=document.getElementById('discount');if(d)d.value='0';
-  const cd=document.getElementById('custom-discount');if(cd)cd.value='0';
-  const cr=document.getElementById('custom-rate');if(cr)cr.value='60';
-  document.querySelectorAll('.type-pill').forEach(x=>x.classList.remove('active'));
-  document.getElementById('transport-banner').style.display='none';
-  currentRef=genRef();
+function nouveauDevis() {
+  items = []; pieces = []; photos = [];
+  CF = 'tissus'; CS = 'tapis'; CH = 'normal'; SL = ''; SS = [];
+  ['c-name', 'c-address', 'c-phone', 'c-email', 'c-superficie', 'c-etage', 'notes', 'custom-notes', 'c-date-intervention'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['frequence', 'custom-frequence', 'c-ascenseur'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
+  const d = document.getElementById('discount'); if (d) d.value = '0';
+  const cd = document.getElementById('custom-discount'); if (cd) cd.value = '0';
+  const cr = document.getElementById('custom-rate'); if (cr) cr.value = '60';
+  document.querySelectorAll('#type-grid .type-pill, #subject-grid .type-pill').forEach(x => x.classList.remove('active'));
+  document.getElementById('transport-banner').style.display = 'none';
+  currentRef = '';
   go('screen-home');
 }
 
 // ── Historique ────────────────────────────────────────────────────────────────
-function renderHistory(){
-  const h=lh(),list=document.getElementById('history-list');
-  if(!h.length){list.innerHTML='<div class="card-title">Historique</div><p style="color:#6b7280;font-size:14px;padding:8px 0">Aucun devis pour le moment.</p>';return;}
-  list.innerHTML='<div class="card-title">Devis récents</div>'+h.map(item=>`<div class="hist-item"><div><div class="hi-name">${item.name}</div><div class="hi-meta">${item.ref?item.ref+' · ':''}${item.date}${item.type==='custom'?' · Personnalisé':''}</div></div><div><div class="hi-amount">${item.amount}</div><div class="hi-status ${item.status==='signed'?'status-signed':'status-pending'}">${item.status==='signed'?'Signé':'En attente'}</div></div></div>`).join('');
+function renderHistory() {
+  const h = lh().filter(x => !currentCompany || x.company === currentCompany);
+  const list = document.getElementById('history-list');
+  if (!h.length) { list.innerHTML = '<div class="card-title">Historique</div><p style="color:#6b7280;font-size:14px;padding:8px 0">Aucun devis pour le moment.</p>'; return; }
+  list.innerHTML = '<div class="card-title">Devis récents</div>' + h.map(item => `<div class="hist-item"><div><div class="hi-name">${item.name}</div><div class="hi-meta">${item.ref ? item.ref + ' · ' : ''}${item.date}${item.type === 'custom' ? ' · Personnalisé' : ''}</div></div><div><div class="hi-amount">${item.amount}</div><div class="hi-status ${item.status === 'signed' ? 'status-signed' : 'status-pending'}">${item.status === 'signed' ? 'Signé' : 'En attente'}</div></div></div>`).join('');
 }
 
 // ── Back office ───────────────────────────────────────────────────────────────
-async function loadBackoffice(){
-  const list=document.getElementById('bo-list');
-  list.innerHTML='<div class="loading">Chargement…</div>';
-  try{
-    const quotes=await sbSelect('quotes','select=*');
-    const ids=quotes.map(q=>q.id);
-    let ibq={};
-    if(ids.length){const qi=await sbSelect('quote_items',`quote_id=in.(${ids.join(',')})&select=*`);qi.forEach(it=>{if(!ibq[it.quote_id])ibq[it.quote_id]=[];ibq[it.quote_id].push(it);});}
-    const signed=quotes.filter(q=>q.pro_status==='terrain_signé'||q.pro_status==='confirmé');
-    const ca=signed.reduce((s,q)=>s+(q.total_ttc||0),0);
-    document.getElementById('bo-count').textContent=quotes.length;
-    document.getElementById('bo-signed').textContent=signed.length;
-    document.getElementById('bo-ca').textContent=Math.round(ca)+'€';
-    if(!quotes.length){list.innerHTML='<div class="loading">Aucun devis pour le moment.</div>';return;}
-    list.innerHTML=quotes.map(q=>{
-      const qItems=ibq[q.id]||[];
-      const sc=q.pro_status==='terrain_signé'?'terrain':q.pro_status==='reçu'?'recu':'other';
-      const sl=q.pro_status==='terrain_signé'?'✓ Terrain signé':q.pro_status==='reçu'?'Reçu':q.pro_status||'—';
-      const ds=q.created_at?new Date(q.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'—';
-      const lh2=qItems.slice(0,3).map(it=>`<div class="bo-line">• ${it.label} — ${it.qty} ${it.unit} — ${fmt(it.total_ht)} HT</div>`).join('');
-      return`<div class="bo-item"><div class="bo-header"><div><div class="bo-name">${q.client_name||'—'}</div><div class="bo-meta">${ds}</div></div><div style="text-align:right"><div class="bo-amount">${fmt(q.total_ttc||0)} TTC</div><div style="font-size:12px;color:#9ca3af">${fmt(q.total_ht||0)} HT</div></div></div><span class="bo-status ${sc}">${sl}</span>${qItems.length?`<div class="bo-lines">${lh2}${qItems.length>3?`<div class="bo-line" style="color:#6b7280">+ ${qItems.length-3} autre(s)</div>`:''}</div>`:''}</div>`;
-    }).join('');
-  }catch(e){console.error(e);list.innerHTML='<div class="loading" style="color:#ef4444">Erreur de connexion Supabase.</div>';}
+
+// ── Filtres back office ───────────────────────────────────────────────────────
+let boFilters = { company: 'all', status: 'all', period: 'all' };
+let allBoQuotes = [];
+let allBoItems = {};
+
+function setFilter(type, val, btn) {
+  boFilters[type] = val;
+  document.querySelectorAll(`[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
 }
 
+function applyFilters() {
+  const min = parseFloat(document.getElementById('bo-filter-min')?.value) || 0;
+  const maxEl = document.getElementById('bo-filter-max');
+  const max = maxEl && maxEl.value ? parseFloat(maxEl.value) : Infinity;
+  const now = new Date();
+  let filtered = allBoQuotes.filter(q => {
+    if (boFilters.status !== 'all' && q.pro_status !== boFilters.status) return false;
+    if (min && (q.total_ttc || 0) < min) return false;
+    if (max < Infinity && (q.total_ttc || 0) > max) return false;
+    if (boFilters.period === 'week') {
+      const start = new Date(now); start.setDate(now.getDate() - 7);
+      if (new Date(q.created_at) < start) return false;
+    }
+    if (boFilters.period === 'month') {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      if (new Date(q.created_at) < start) return false;
+    }
+    return true;
+  });
+  const signed = filtered.filter(q => q.pro_status === 'terrain_signé' || q.pro_status === 'confirmé');
+  const ca = signed.reduce((s, q) => s + (q.total_ttc || 0), 0);
+  document.getElementById('bo-count').textContent = filtered.length;
+  document.getElementById('bo-signed').textContent = signed.length;
+  document.getElementById('bo-ca').textContent = Math.round(ca) + '€';
+  if (!filtered.length) { document.getElementById('bo-list').innerHTML = '<div class="loading">Aucun devis pour ces filtres.</div>'; return; }
+  document.getElementById('bo-list').innerHTML = filtered.map(q => {
+    const qItems = allBoItems[q.id] || [];
+    const sc = q.pro_status === 'terrain_signé' ? 'terrain' : q.pro_status === 'reçu' ? 'recu' : 'other';
+    const sl = q.pro_status === 'terrain_signé' ? '✓ Terrain signé' : q.pro_status === 'reçu' ? 'Reçu' : q.pro_status || '—';
+    const ds = q.created_at ? new Date(q.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+    const lh2 = qItems.slice(0, 3).map(it => `<div class="bo-line">• ${it.label} — ${it.qty} ${it.unit} — ${fmt(it.total_ht)} HT</div>`).join('');
+    return `<div class="bo-item"><div class="bo-header"><div><div class="bo-name">${q.client_name || '—'}</div><div class="bo-meta">${ds}</div></div><div style="text-align:right"><div class="bo-amount">${fmt(q.total_ttc || 0)} TTC</div><div style="font-size:12px;color:#9ca3af">${fmt(q.total_ht || 0)} HT</div></div></div><span class="bo-status ${sc}">${sl}</span>${qItems.length ? `<div class="bo-lines">${lh2}${qItems.length > 3 ? `<div class="bo-line" style="color:#6b7280">+ ${qItems.length - 3} autre(s)</div>` : ''}</div>` : ''}</div>`;
+  }).join('');
+}
+
+async function loadBackoffice() {
+  const list = document.getElementById('bo-list');
+  list.innerHTML = '<div class="loading">Chargement…</div>';
+  try {
+    allBoQuotes = await sbSelect('quotes', 'select=*');
+    const ids = allBoQuotes.map(q => q.id);
+    allBoItems = {};
+    if (ids.length) {
+      const qi = await sbSelect('quote_items', `quote_id=in.(${ids.join(',')})&select=*`);
+      qi.forEach(it => { if (!allBoItems[it.quote_id]) allBoItems[it.quote_id] = []; allBoItems[it.quote_id].push(it); });
+    }
+    applyFilters();
+  } catch (e) {
+    console.error(e);
+    document.getElementById('bo-list').innerHTML = '<div class="loading" style="color:#ef4444">Erreur de connexion Supabase.</div>';
+  }
+}
+
+// ── Notifications push ────────────────────────────────────────────────────────
+async function requestPushPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') await Notification.requestPermission();
+}
+
+function sendPushNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try { new Notification(title, { body }); }
+  catch (e) {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(sw => sw.showNotification(title, { body })).catch(() => {});
+    }
+  }
+}
+
+// ── Mode hors ligne ───────────────────────────────────────────────────────────
+const OFFLINE_KEY = 'vasco_offline_queue';
+function getOfflineQueue() { try { return JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]'); } catch { return []; } }
+function saveOfflineQueue(q) { localStorage.setItem(OFFLINE_KEY, JSON.stringify(q)); }
+
+function addToOfflineQueue(quoteRow, dbItems) {
+  const q = getOfflineQueue();
+  q.push({ quoteRow, dbItems, createdAt: new Date().toISOString() });
+  saveOfflineQueue(q);
+  updateOfflineBanner();
+}
+
+function updateOfflineBanner() {
+  const q = getOfflineQueue();
+  const banner = document.getElementById('offline-banner');
+  const count = document.getElementById('offline-count');
+  if (!banner) return;
+  if (q.length > 0) { banner.style.display = ''; if(count) count.textContent = q.length; }
+  else banner.style.display = 'none';
+}
+
+async function syncOfflineQueue() {
+  const q = getOfflineQueue();
+  if (!q.length) return;
+  const remaining = [];
+  for (const item of q) {
+    try {
+      await sbInsert('quotes', [item.quoteRow]);
+      if (item.dbItems && item.dbItems.length) await sbInsert('quote_items', item.dbItems);
+    } catch (e) { remaining.push(item); }
+  }
+  saveOfflineQueue(remaining);
+  updateOfflineBanner();
+  if (remaining.length < q.length) {
+    sendPushNotification('Vasco — Sync réussie', `${q.length - remaining.length} devis synchronisé(s) ✓`);
+  }
+}
+
+function initOfflineQueue() {
+  updateOfflineBanner();
+  window.addEventListener('online', syncOfflineQueue);
+  if (navigator.onLine) setTimeout(syncOfflineQueue, 1000);
+}
+
+// ── PDF preview & download ────────────────────────────────────────────────────
+function buildPDFHTML() {
+  const isCustom = quoteType === 'custom';
+  const co = COMPANIES[currentCompany] || COMPANIES.lmp;
+  const name = document.getElementById('c-name').value;
+  const addr = document.getElementById('c-address').value;
+  const phone = document.getElementById('c-phone').value;
+  const email = document.getElementById('c-email').value;
+  const superficie = document.getElementById('c-superficie').value;
+  const etage = document.getElementById('c-etage').value;
+  const dateIntv = document.getElementById('c-date-intervention').value;
+  const freq = document.getElementById(isCustom ? 'custom-frequence' : 'frequence').value;
+  const notes = document.getElementById(isCustom ? 'custom-notes' : 'notes').value;
+  const allItems = isCustom ? getCustomTotals().allItems : items;
+  const { subtotal, disc, totalHT, tva, totalTTC } = isCustom ? getCustomTotals() : getTotals();
+  const dateStr = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const dateFmt = dateIntv ? new Date(dateIntv).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  const rows = allItems.map(it => `<tr>
+    <td style="padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#333;font-size:13px">${it.label}${it.isHaussmann ? ' (+30%)' : ''}</td>
+    <td style="padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#333;font-size:13px;text-align:right">${it.qty} ${it.unit}</td>
+    <td style="padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#333;font-size:13px;text-align:right">${fmt(it.priceHT)}</td>
+    <td style="padding:7px 8px;border-bottom:1px solid #f0f0f0;font-size:13px;text-align:right;font-weight:700;color:#333">${fmt(it.totalHT)}</td>
+  </tr>`).join('');
+  return `<div style="background:#fff;color:#000;padding:24px;font-family:-apple-system,sans-serif">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid ${co.color}">
+      <div>
+        ${co.legal ? `<div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${co.legal}</div>` : ''}
+        <div style="font-size:22px;font-weight:900;color:${co.color}">${co.name}</div>
+        <div style="font-size:12px;color:#666;margin-top:4px">${co.email} • ${co.phone}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:16px;font-weight:900">Devis ${currentRef}</div>
+        <div style="font-size:12px;color:#999;margin-top:2px">${dateStr}</div>
+      </div>
+    </div>
+    <div style="background:#f9f9f9;border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:900;margin-bottom:4px">${name}</div>
+      ${addr ? `<div style="font-size:13px;color:#555;margin-top:2px">${addr}</div>` : ''}
+      ${superficie ? `<div style="font-size:13px;color:#555;margin-top:2px">Superficie : ${superficie} m²${etage ? ' • Étage ' + etage : ''}</div>` : ''}
+      ${phone ? `<div style="font-size:13px;color:#555;margin-top:2px">${phone}</div>` : ''}
+      ${email ? `<div style="font-size:13px;color:#555;margin-top:2px">${email}</div>` : ''}
+      ${SL ? `<div style="font-size:13px;color:#555;margin-top:2px">${SL}</div>` : ''}
+      ${SS.length ? `<div style="font-size:13px;color:#f97316;font-weight:700;margin-top:4px">Sujet : ${SS.join(', ')}</div>` : ''}
+      ${dateFmt ? `<div style="font-size:13px;color:#16a34a;font-weight:700;margin-top:4px">📅 Intervention souhaitée : ${dateFmt}</div>` : ''}
+      <div style="font-size:13px;color:#555;margin-top:4px">${freq}</div>
+      ${notes ? `<div style="font-size:12px;color:#888;font-style:italic;margin-top:6px">${notes}</div>` : ''}
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:#f0f0f0">
+        <th style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;padding:8px;text-align:left">Prestation</th>
+        <th style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;padding:8px;text-align:right">Qté</th>
+        <th style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;padding:8px;text-align:right">PU HT</th>
+        <th style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;padding:8px;text-align:right">Total HT</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="max-width:240px;margin-left:auto;margin-top:12px">
+      ${disc > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#333"><span>Remise ${disc}%</span><span style="color:#16a34a">−${fmt(subtotal - totalHT)}</span></div>` : ''}
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#333"><span>Total HT</span><span>${fmt(totalHT)}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#333"><span>TVA (20%)</span><span>${fmt(tva)}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:6px;border-top:2px solid #000;font-size:17px;font-weight:900;color:#000"><span>Total TTC</span><span style="color:#f97316">${fmt(totalTTC)}</span></div>
+    </div>
+    <div style="margin-top:20px;padding:12px;background:#f9f9f9;border-radius:10px;font-size:11px;color:#888">
+      Devis valable 30 jours. En acceptant ce devis, vous acceptez les CGV de ${co.name}. Contact : ${co.email}
+    </div>
+  </div>`;
+}
+
+function renderPDFPreview() {
+  document.getElementById('pdf-preview-card').innerHTML = buildPDFHTML();
+}
+
+function downloadPDF() {
+  const win = window.open('', '_blank');
+  if (!win) { alert("Autorisez les pop-ups pour télécharger le PDF."); return; }
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Devis ${currentRef}</title></head><body style="margin:0;padding:0">${buildPDFHTML()}<script>window.onload=()=>{window.print();}<\/script></body></html>`);
+  win.document.close();
+}
+
+// ── Tableau de bord ───────────────────────────────────────────────────────────
+let dashPeriod = 'week';
+function setPeriod(p) {
+  dashPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`period-${p}`).classList.add('active');
+  loadDashboard();
+}
+
+async function loadDashboard() {
+  const co = COMPANIES[currentCompany] || COMPANIES.lmp;
+  document.getElementById('dashboard-title').textContent = co.name;
+  const now = new Date();
+  let startDate = dashPeriod === 'week'
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6)
+    : new Date(now.getFullYear(), now.getMonth(), 1);
+  try {
+    const allQ = await sbSelect('quotes', `select=*&created_at=gte.${startDate.toISOString()}`);
+    const ids = allQ.map(q => q.id);
+    let ibq = {};
+    if (ids.length) {
+      const qi = await sbSelect('quote_items', `quote_id=in.(${ids.join(',')})&select=*`);
+      qi.forEach(it => { if (!ibq[it.quote_id]) ibq[it.quote_id] = []; ibq[it.quote_id].push(it); });
+    }
+    const signed = allQ.filter(q => q.pro_status === 'terrain_signé' || q.pro_status === 'confirmé');
+    const totalCA = signed.reduce((s, q) => s + (q.total_ttc || 0), 0);
+    const avgTicket = signed.length ? totalCA / signed.length : 0;
+    const convRate = allQ.length ? Math.round((signed.length / allQ.length) * 100) : 0;
+    document.getElementById('dashboard-stats').innerHTML = `
+      <div class="dash-stat"><div class="dash-stat-val">${fmt(totalCA)}</div><div class="dash-stat-lbl">CA TTC signé</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${signed.length}</div><div class="dash-stat-lbl">Devis signés</div><div class="dash-stat-sub">sur ${allQ.length} créés</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${fmt(avgTicket)}</div><div class="dash-stat-lbl">Ticket moyen</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${convRate}%</div><div class="dash-stat-lbl">Conversion</div></div>`;
+    // Graphe CA par jour
+    const dayMap = {};
+    signed.forEach(q => {
+      const d = new Date(q.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit' });
+      dayMap[d] = (dayMap[d] || 0) + (q.total_ttc || 0);
+    });
+    const days = Object.keys(dayMap);
+    const vals = days.map(d => dayMap[d]);
+    const maxVal = Math.max(...vals, 1);
+    const bw = days.length ? Math.max(20, Math.floor(260 / days.length) - 6) : 30;
+    const svgBars = days.map((d, i) => {
+      const h = Math.max(2, Math.round((vals[i] / maxVal) * 70));
+      return `<g><rect x="${i*(bw+6)}" y="${70-h}" width="${bw}" height="${h}" rx="3" fill="#f97316" opacity=".85"/>
+        <text x="${i*(bw+6)+bw/2}" y="85" text-anchor="middle" font-size="9" fill="#6b7280">${d}</text></g>`;
+    }).join('');
+    document.getElementById('dashboard-chart-card').innerHTML = `<div class="card-title">CA par jour (TTC)</div>
+      <svg viewBox="0 0 ${Math.max(260, days.length*(bw+6))} 95" style="width:100%;overflow:visible">
+        ${svgBars || '<text x="130" y="45" text-anchor="middle" font-size="12" fill="#6b7280">Aucune donnée</text>'}
+      </svg>`;
+    // Top prestations
+    const pc = {};
+    Object.values(ibq).flat().forEach(it => { const k = (it.label||'').replace(/^[^\s]+\s/,''); pc[k] = (pc[k]||0)+1; });
+    const top = Object.entries(pc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const mx = top[0]?.[1] || 1;
+    document.getElementById('dashboard-prestations').innerHTML = top.length
+      ? top.map(([l,c])=>`<div class="presta-bar-row"><div class="presta-bar-label">${l}</div><div class="presta-bar-track"><div class="presta-bar-fill" style="width:${Math.round(c/mx*100)}%"></div></div><div class="presta-bar-val">${c}×</div></div>`).join('')
+      : '<p style="color:#6b7280;font-size:13px">Aucune prestation sur la période.</p>';
+    // Conversion
+    document.getElementById('dashboard-conversion').innerHTML = `<div class="conv-gauge">
+      <div class="conv-pct">${convRate}%</div>
+      <div class="conv-detail">${signed.length} signé(s)<br>${allQ.length-signed.length} non signé(s)<br><span style="color:#6b7280">${dashPeriod==='week'?'7 derniers jours':'Ce mois'}</span></div>
+    </div>`;
+  } catch(e) {
+    console.error('Dashboard error:', e);
+    document.getElementById('dashboard-stats').innerHTML = '<p style="color:#ef4444;font-size:13px;grid-column:span 2">Erreur de connexion.</p>';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
 updateStats();
 renderCatalogue();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+initOfflineQueue();
+requestPushPermission();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>

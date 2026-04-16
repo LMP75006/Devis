@@ -33,52 +33,49 @@ async function axonautPOST(path, body, company) {
 
 function splitName(fullName) {
   const parts = (fullName || '').trim().split(' ');
-  const firstName = parts[0] || '';
-  const lastName = parts.slice(1).join(' ') || '';
-  return { firstName, lastName };
+  return { firstName: parts[0] || '', lastName: parts.slice(1).join(' ') || '' };
 }
 
 async function findOrCreateContact(d, company) {
-  const { firstName, lastName } = splitName(d.name);
-
-  // 1. Chercher par email
+  // 1. Chercher par email dans les sociétés (particuliers inclus)
   if (d.email) {
-    const s = await axonautGET(`/employees?search=${encodeURIComponent(d.email)}`, company);
+    const s = await axonautGET(`/companies?search=${encodeURIComponent(d.email)}`, company);
     if (s.ok && Array.isArray(s.data) && s.data.length > 0) {
-      console.log('Contact trouvé par email:', s.data[0].id);
-      return { contactId: s.data[0].id, created: false };
+      return { companyId: s.data[0].id, created: false };
     }
   }
 
   // 2. Chercher par nom
   if (d.name) {
-    const sn = await axonautGET(`/employees?search=${encodeURIComponent(d.name)}`, company);
+    const sn = await axonautGET(`/companies?search=${encodeURIComponent(d.name)}`, company);
     if (sn.ok && Array.isArray(sn.data) && sn.data.length > 0) {
-      console.log('Contact trouvé par nom:', sn.data[0].id);
-      return { contactId: sn.data[0].id, created: false };
+      return { companyId: sn.data[0].id, created: false };
     }
   }
 
-  // 3. Créer un particulier — pas de société
-  const payload = {
-    first_name: firstName,
-    last_name: lastName || firstName,
+  // 3. Créer la fiche particulier via /companies
+  // Dans Axonaut, un particulier = société sans SIRET avec is_individual=true
+  const { firstName, lastName } = splitName(d.name);
+  const companyPayload = {
+    name: d.name || 'Client',
+    is_individual: true,
     email: d.email || '',
     phone: d.phone || '',
     address: d.address || '',
-    is_particular: true,
+    first_name: firstName,
+    last_name: lastName,
   };
 
-  const r = await axonautPOST('/employees', payload, company);
-  if (r.ok && r.data && r.data.id) {
-    console.log('Contact particulier créé:', r.data.id);
-    return { contactId: r.data.id, created: true };
+  const c = await axonautPOST('/companies', companyPayload, company);
+  if (!c.ok || !c.data || !c.data.id) {
+    throw new Error(`Contact creation failed: ${JSON.stringify(c.data).substring(0, 300)}`);
   }
-  throw new Error(`Contact creation failed: ${JSON.stringify(r.data).substring(0, 300)}`);
+
+  console.log('Contact particulier créé:', c.data.id);
+  return { companyId: c.data.id, created: true };
 }
 
-async function createAxonautQuote(d, contactId, company) {
-  // Lignes produits
+async function createAxonautQuote(d, companyId, company) {
   const products = (d.items || []).map(it => ({
     description: it.label + (it.isHaussmann ? ' (+30% Haussmann)' : ''),
     quantity: parseFloat(it.qty) || 1,
@@ -86,7 +83,6 @@ async function createAxonautQuote(d, contactId, company) {
     tax_rate: 20,
   }));
 
-  // Ligne remise si applicable
   if (d.disc && parseFloat(d.disc) > 0) {
     const discountAmount = parseFloat(((d.subtotal || 0) - (d.totalHT || 0)).toFixed(2));
     if (discountAmount > 0) {
@@ -99,7 +95,6 @@ async function createAxonautQuote(d, contactId, company) {
     }
   }
 
-  // Notes complètes
   const noteLines = [
     `Référence Vasco : ${d.ref || ''}`,
     d.address          ? `Adresse : ${d.address}` : '',
@@ -117,7 +112,7 @@ async function createAxonautQuote(d, contactId, company) {
 
   const payload = {
     reference: d.ref || '',
-    employee_id: contactId,
+    company_id: companyId,
     products,
     comment: noteLines,
   };
@@ -139,41 +134,27 @@ module.exports = async function handler(req, res) {
   const { to, subject, html, fromName, fromEmail, devisData } = req.body;
   const results = { email: false, axonaut: null };
 
-  // ── Email ──────────────────────────────────────────────────────────────────
   if (to && subject && html) {
     try {
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: `${fromName || 'La Maison Propre'} <${fromEmail || 'contact@lamaisonpropre.fr'}>`,
-          to: [to],
-          subject,
-          html,
+          to: [to], subject, html,
         }),
       });
       results.email = r.ok;
       if (!r.ok) console.error('Resend error:', await r.text());
-    } catch (e) {
-      console.error('Email error:', e.message);
-    }
+    } catch (e) { console.error('Email error:', e.message); }
   }
 
-  // ── Axonaut ────────────────────────────────────────────────────────────────
   if (devisData) {
     try {
       const company = devisData.company || 'lmp';
       const contact = await findOrCreateContact(devisData, company);
-      const quote = await createAxonautQuote(devisData, contact.contactId, company);
-      results.axonaut = {
-        success: true,
-        contactId: contact.contactId,
-        contactCreated: contact.created,
-        quoteId: quote.axonautId,
-      };
+      const quote = await createAxonautQuote(devisData, contact.companyId, company);
+      results.axonaut = { success: true, companyId: contact.companyId, contactCreated: contact.created, quoteId: quote.axonautId };
       console.log('Axonaut success:', JSON.stringify(results.axonaut));
     } catch (e) {
       console.error('Axonaut error:', e.message);

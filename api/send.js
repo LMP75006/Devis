@@ -8,12 +8,30 @@ function getAxonautKey(company) {
     : process.env.AXONAUT_KEY_LMP;
 }
 
-async function axonautRequest(method, path, body, company) {
+async function axonautGET(path, company) {
   const key = getAxonautKey(company);
   const r = await fetch(`${AXONAUT_URL}${path}`, {
-    method,
-    headers: { 'userApiKey': key, 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
+    method: 'GET',
+    headers: {
+      'userApiKey': key,
+      'Accept': 'application/json',
+    },
+  });
+  const text = await r.text();
+  try { return { ok: r.ok, status: r.status, data: JSON.parse(text) }; }
+  catch { return { ok: r.ok, status: r.status, data: text }; }
+}
+
+async function axonautPOST(path, body, company) {
+  const key = getAxonautKey(company);
+  const r = await fetch(`${AXONAUT_URL}${path}`, {
+    method: 'POST',
+    headers: {
+      'userApiKey': key,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
   });
   const text = await r.text();
   try { return { ok: r.ok, status: r.status, data: JSON.parse(text) }; }
@@ -23,29 +41,52 @@ async function axonautRequest(method, path, body, company) {
 async function findOrCreateCustomer(d, company) {
   const nameParts = (d.name || '').trim().split(' ');
   const firstName = nameParts[0] || '';
-  const lastName = nameParts.slice(1).join(' ') || '';
+  const lastName = nameParts.slice(1).join(' ') || firstName;
+
+  // Chercher par email
   if (d.email) {
-    const s = await axonautRequest('GET', `/customers?search=${encodeURIComponent(d.email)}`, null, company);
-    if (s.ok && s.data?.length > 0) return { id: s.data[0].id, created: false };
+    const s = await axonautGET(`/companies?search=${encodeURIComponent(d.email)}`, company);
+    if (s.ok && Array.isArray(s.data) && s.data.length > 0) {
+      return { id: s.data[0].id, created: false };
+    }
   }
-  const sn = await axonautRequest('GET', `/customers?search=${encodeURIComponent(d.name || '')}`, null, company);
-  if (sn.ok && sn.data?.length > 0) return { id: sn.data[0].id, created: false };
-  const c = await axonautRequest('POST', '/customers', {
-    first_name: firstName, last_name: lastName,
-    email: d.email || '', phone: d.phone || '',
-    address: d.address || '', type: 'customer',
-  }, company);
-  if (c.ok && c.data?.id) return { id: c.data.id, created: true };
-  throw new Error(`Customer creation failed: ${JSON.stringify(c.data)}`);
+
+  // Chercher par nom
+  const sn = await axonautGET(`/companies?search=${encodeURIComponent(d.name || '')}`, company);
+  if (sn.ok && Array.isArray(sn.data) && sn.data.length > 0) {
+    return { id: sn.data[0].id, created: false };
+  }
+
+  // Créer le client — endpoint /companies avec company_name requis
+  const payload = {
+    company_name: d.name || 'Client',
+    employees: [
+      {
+        first_name: firstName,
+        last_name: lastName,
+        email: d.email || '',
+        phone: d.phone || '',
+        is_main_contact: true,
+      }
+    ],
+    address: d.address || '',
+  };
+
+  const c = await axonautPOST('/companies', payload, company);
+  if (c.ok && c.data && c.data.id) {
+    return { id: c.data.id, created: true };
+  }
+  throw new Error(`Customer creation failed: ${JSON.stringify(c.data).substring(0, 200)}`);
 }
 
-async function createAxonautQuote(d, customerId, company) {
+async function createAxonautQuote(d, companyId, company) {
   const lines = (d.items || []).map(it => ({
-    description: it.label + (it.isHaussmann ? ' (+30%)' : ''),
+    title: it.label + (it.isHaussmann ? ' (+30%)' : ''),
     quantity: it.qty,
-    unit_price: it.priceHT,
-    taxes: [{ rate: 20 }],
+    unit_price_duty_free: it.priceHT,
+    tax_rate: 20,
   }));
+
   const notes = [
     d.address ? `Adresse : ${d.address}` : '',
     d.superficie ? `Superficie : ${d.superficie} m²` : '',
@@ -53,11 +94,19 @@ async function createAxonautQuote(d, customerId, company) {
     d.dateIntervention ? `Intervention souhaitée : ${d.dateIntervention}` : '',
     d.notes || '',
   ].filter(Boolean).join('\n');
-  const r = await axonautRequest('POST', '/quotes', {
-    reference: d.ref, customer_id: customerId, lines, notes, status: 'draft',
-  }, company);
-  if (r.ok) return { success: true, axonautId: r.data?.id };
-  throw new Error(`Quote creation failed: ${JSON.stringify(r.data)}`);
+
+  const payload = {
+    reference: d.ref,
+    company_id: companyId,
+    lines,
+    comment: notes,
+  };
+
+  const r = await axonautPOST('/quotations', payload, company);
+  if (r.ok && r.data && r.data.id) {
+    return { success: true, axonautId: r.data.id };
+  }
+  throw new Error(`Quote creation failed: ${JSON.stringify(r.data).substring(0, 200)}`);
 }
 
 module.exports = async function handler(req, res) {
@@ -70,31 +119,44 @@ module.exports = async function handler(req, res) {
   const { to, subject, html, fromName, fromEmail, devisData } = req.body;
   const results = { email: false, axonaut: null };
 
-  // Email
+  // ── Email ──────────────────────────────────────────────────────────────────
   if (to && subject && html) {
     try {
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           from: `${fromName || 'La Maison Propre'} <${fromEmail || 'contact@lamaisonpropre.fr'}>`,
-          to: [to], subject, html,
+          to: [to],
+          subject,
+          html,
         }),
       });
       results.email = r.ok;
       if (!r.ok) console.error('Resend error:', await r.text());
-    } catch (e) { console.error('Email error:', e); }
+    } catch (e) {
+      console.error('Email error:', e.message);
+    }
   }
 
-  // Axonaut
+  // ── Axonaut ────────────────────────────────────────────────────────────────
   if (devisData) {
     try {
       const company = devisData.company || 'lmp';
       const customer = await findOrCreateCustomer(devisData, company);
       const quote = await createAxonautQuote(devisData, customer.id, company);
-      results.axonaut = { success: true, customerId: customer.id, customerCreated: customer.created, quoteId: quote.axonautId };
+      results.axonaut = {
+        success: true,
+        companyId: customer.id,
+        customerCreated: customer.created,
+        quoteId: quote.axonautId,
+      };
+      console.log('Axonaut success:', JSON.stringify(results.axonaut));
     } catch (e) {
-      console.error('Axonaut error:', e);
+      console.error('Axonaut error:', e.message);
       results.axonaut = { success: false, error: e.message };
     }
   }

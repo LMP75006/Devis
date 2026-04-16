@@ -1428,7 +1428,7 @@ function applyFilters() {
       <div style="display:flex;gap:8px;margin-top:10px">
         <button style="flex:1;padding:9px;border:1px solid #2f2f2f;border-radius:10px;background:#000;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" onclick="openEdit('${q.id}')">✏️ Modifier</button>
         ${notSigned ? `<button style="flex:1;padding:9px;border:1px solid #f97316;border-radius:10px;background:#000;color:#f97316;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit" onclick="openEditSig('${q.id}')">✍️ Signer</button>` : ''}
-        <button style="padding:9px 13px;border:1px solid #3f1f1f;border-radius:10px;background:#000;color:#ef4444;font-size:18px;cursor:pointer;font-family:inherit" onclick="deleteQuote('${q.id}','${(q.client_name||'').replace(/'/g,'\\'')}')">🗑️</button>
+        <button style="padding:9px 13px;border:1px solid #3f1f1f;border-radius:10px;background:#000;color:#ef4444;font-size:18px;cursor:pointer;font-family:inherit" onclick="deleteQuote('${q.id}')">🗑️</button>
       </div>
     </div>`;
   }).join('');
@@ -1893,13 +1893,14 @@ async function editSendSignatureLink() {
   } catch (e) { alert('Erreur envoi email : ' + e.message); }
 }
 
-async function deleteQuote(id, name) {
+async function deleteQuote(id) {
+  const q = allBoQuotes.find(x => x.id === id);
+  const name = q?.client_name || 'ce client';
   if (!confirm(`Supprimer le devis de ${name} ?\n\nCette action est irréversible.`)) return;
   try {
     await sbDelete('quote_items', `quote_id=eq.${id}`);
     await sbDelete('quotes', `id=eq.${id}`);
-    // Supprimer aussi de l'historique local
-    const h = lh().filter(x => x.ref !== (allBoQuotes.find(q => q.id === id)?.ref));
+    const h = lh().filter(x => x.ref !== q?.ref);
     sh(h);
     await loadBackoffice();
   } catch (e) {

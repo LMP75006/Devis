@@ -12,10 +12,7 @@ async function axonautGET(path, company) {
   const key = getAxonautKey(company);
   const r = await fetch(`${AXONAUT_URL}${path}`, {
     method: 'GET',
-    headers: {
-      'userApiKey': key,
-      'Accept': 'application/json',
-    },
+    headers: { 'userApiKey': key, 'Accept': 'application/json' },
   });
   const text = await r.text();
   try { return { ok: r.ok, status: r.status, data: JSON.parse(text) }; }
@@ -26,11 +23,7 @@ async function axonautPOST(path, body, company) {
   const key = getAxonautKey(company);
   const r = await fetch(`${AXONAUT_URL}${path}`, {
     method: 'POST',
-    headers: {
-      'userApiKey': key,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
+    headers: { 'userApiKey': key, 'Accept': 'application/json', 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   const text = await r.text();
@@ -38,75 +31,102 @@ async function axonautPOST(path, body, company) {
   catch { return { ok: r.ok, status: r.status, data: text }; }
 }
 
-async function findOrCreateCustomer(d, company) {
-  const nameParts = (d.name || '').trim().split(' ');
-  const firstName = nameParts[0] || '';
-  const lastName = nameParts.slice(1).join(' ') || firstName;
+function splitName(fullName) {
+  const parts = (fullName || '').trim().split(' ');
+  const firstName = parts[0] || '';
+  const lastName = parts.slice(1).join(' ') || '';
+  return { firstName, lastName };
+}
 
-  // Chercher par email
+async function findOrCreateContact(d, company) {
+  const { firstName, lastName } = splitName(d.name);
+
+  // 1. Chercher par email
   if (d.email) {
-    const s = await axonautGET(`/companies?search=${encodeURIComponent(d.email)}`, company);
+    const s = await axonautGET(`/employees?search=${encodeURIComponent(d.email)}`, company);
     if (s.ok && Array.isArray(s.data) && s.data.length > 0) {
-      return { id: s.data[0].id, created: false };
+      console.log('Contact trouvé par email:', s.data[0].id);
+      return { contactId: s.data[0].id, created: false };
     }
   }
 
-  // Chercher par nom
-  const sn = await axonautGET(`/companies?search=${encodeURIComponent(d.name || '')}`, company);
-  if (sn.ok && Array.isArray(sn.data) && sn.data.length > 0) {
-    return { id: sn.data[0].id, created: false };
+  // 2. Chercher par nom
+  if (d.name) {
+    const sn = await axonautGET(`/employees?search=${encodeURIComponent(d.name)}`, company);
+    if (sn.ok && Array.isArray(sn.data) && sn.data.length > 0) {
+      console.log('Contact trouvé par nom:', sn.data[0].id);
+      return { contactId: sn.data[0].id, created: false };
+    }
   }
 
-  // Créer le client — endpoint /companies avec company_name requis
+  // 3. Créer un particulier — pas de société
   const payload = {
-    name: d.name || 'Client',
-    employees: [
-      {
-        first_name: firstName,
-        last_name: lastName,
-        email: d.email || '',
-        phone: d.phone || '',
-        is_main_contact: true,
-      }
-    ],
+    first_name: firstName,
+    last_name: lastName || firstName,
+    email: d.email || '',
+    phone: d.phone || '',
     address: d.address || '',
+    is_particular: true,
   };
 
-  const c = await axonautPOST('/companies', payload, company);
-  if (c.ok && c.data && c.data.id) {
-    return { id: c.data.id, created: true };
+  const r = await axonautPOST('/employees', payload, company);
+  if (r.ok && r.data && r.data.id) {
+    console.log('Contact particulier créé:', r.data.id);
+    return { contactId: r.data.id, created: true };
   }
-  throw new Error(`Customer creation failed: ${JSON.stringify(c.data).substring(0, 200)}`);
+  throw new Error(`Contact creation failed: ${JSON.stringify(r.data).substring(0, 300)}`);
 }
 
-async function createAxonautQuote(d, companyId, company) {
+async function createAxonautQuote(d, contactId, company) {
+  // Lignes produits
   const products = (d.items || []).map(it => ({
-    name: it.label + (it.isHaussmann ? ' (+30%)' : ''),
-    quantity: it.qty,
-    unit_price: it.priceHT,
-    tax: 20,
+    description: it.label + (it.isHaussmann ? ' (+30% Haussmann)' : ''),
+    quantity: parseFloat(it.qty) || 1,
+    price: parseFloat(it.priceHT) || 0,
+    tax_rate: 20,
   }));
 
-  const notes = [
-    d.address ? `Adresse : ${d.address}` : '',
-    d.superficie ? `Superficie : ${d.superficie} m²` : '',
-    d.freq ? `Fréquence : ${d.freq}` : '',
+  // Ligne remise si applicable
+  if (d.disc && parseFloat(d.disc) > 0) {
+    const discountAmount = parseFloat(((d.subtotal || 0) - (d.totalHT || 0)).toFixed(2));
+    if (discountAmount > 0) {
+      products.push({
+        description: `Remise commerciale ${d.disc}%`,
+        quantity: 1,
+        price: -discountAmount,
+        tax_rate: 20,
+      });
+    }
+  }
+
+  // Notes complètes
+  const noteLines = [
+    `Référence Vasco : ${d.ref || ''}`,
+    d.address          ? `Adresse : ${d.address}` : '',
+    d.superficie       ? `Superficie : ${d.superficie} m²` : '',
+    d.etage            ? `Étage : ${d.etage}` : '',
+    d.ascenseur        ? `Ascenseur : ${d.ascenseur}` : '',
+    d.logement         ? `Type de bien : ${d.logement}` : '',
+    (d.subject && d.subject.length) ? `Sujet : ${Array.isArray(d.subject) ? d.subject.join(', ') : d.subject}` : '',
     d.dateIntervention ? `Intervention souhaitée : ${d.dateIntervention}` : '',
-    d.notes || '',
+    d.freq             ? `Fréquence : ${d.freq}` : '',
+    d.quoteType === 'custom' ? 'Type : Devis personnalisé' : 'Type : Devis classique',
+    d.photosCount      ? `Photos jointes : ${d.photosCount}` : '',
+    d.notes            ? `Notes : ${d.notes}` : '',
   ].filter(Boolean).join('\n');
 
   const payload = {
-    reference: d.ref,
-    company_id: companyId,
+    reference: d.ref || '',
+    employee_id: contactId,
     products,
-    comment: notes,
+    comment: noteLines,
   };
 
   const r = await axonautPOST('/quotations', payload, company);
   if (r.ok && r.data && r.data.id) {
     return { success: true, axonautId: r.data.id };
   }
-  throw new Error(`Quote creation failed: ${JSON.stringify(r.data).substring(0, 200)}`);
+  throw new Error(`Quote creation failed: ${JSON.stringify(r.data).substring(0, 300)}`);
 }
 
 module.exports = async function handler(req, res) {
@@ -146,12 +166,12 @@ module.exports = async function handler(req, res) {
   if (devisData) {
     try {
       const company = devisData.company || 'lmp';
-      const customer = await findOrCreateCustomer(devisData, company);
-      const quote = await createAxonautQuote(devisData, customer.id, company);
+      const contact = await findOrCreateContact(devisData, company);
+      const quote = await createAxonautQuote(devisData, contact.contactId, company);
       results.axonaut = {
         success: true,
-        companyId: customer.id,
-        customerCreated: customer.created,
+        contactId: contact.contactId,
+        contactCreated: contact.created,
         quoteId: quote.axonautId,
       };
       console.log('Axonaut success:', JSON.stringify(results.axonaut));

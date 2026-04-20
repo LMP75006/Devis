@@ -1503,6 +1503,13 @@ function initOfflineQueue() {
   updateOfflineBanner();
   window.addEventListener('online', syncOfflineQueue);
   if (navigator.onLine) setTimeout(syncOfflineQueue, 1000);
+  // Avertir si fermeture avec devis en attente
+  window.addEventListener('beforeunload', e => {
+    if (getOfflineQueue().length > 0) {
+      e.preventDefault();
+      e.returnValue = 'Des devis sont en attente de synchronisation. Quitter ?';
+    }
+  });
 }
 
 // ── PDF preview & download ────────────────────────────────────────────────────

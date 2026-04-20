@@ -153,6 +153,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .bo-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;margin-top:6px}
 .bo-status.terrain{background:#1a2e1a;color:#22c55e;border:1px solid #166534}
 .bo-status.recu{background:#1a1a2e;color:#818cf8;border:1px solid #3730a3}
+.bo-status.brouillon{background:#1a1200;color:#f59e0b;border:1px solid #92400e}
 .bo-status.other{background:#1f1f1f;color:#9ca3af;border:1px solid #2f2f2f}
 .bo-lines{margin-top:8px;padding-top:8px;border-top:1px solid #1f1f1f}
 .bo-line{font-size:12px;color:#9ca3af;padding:2px 0}
@@ -287,6 +288,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-home')">← Retour</button>
     <span class="hd-title" id="type-title">Type de devis</span>
+    <button class="back-btn" onclick="saveDraft()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
     <div class="quote-type-grid">
@@ -309,7 +311,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-type')">← Retour</button>
     <span class="hd-title">Informations client</span>
-    <span class="step-badge">1 / 3</span>
+    <button class="back-btn" onclick="saveDraft()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
     <div class="card">
@@ -361,7 +363,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-client')">← Retour</button>
     <span class="hd-title">Prestations</span>
-    <span class="step-badge">2 / 3</span>
+    <button class="back-btn" onclick="saveDraft()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
     <div class="card">
@@ -415,7 +417,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-client')">← Retour</button>
     <span class="hd-title">Devis personnalisé</span>
-    <span class="step-badge">2 / 3</span>
+    <button class="back-btn" onclick="saveDraft()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
     <div class="card">
@@ -459,7 +461,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="goRecapBack()">← Retour</button>
     <span class="hd-title">Récapitulatif</span>
-    <span class="step-badge">3 / 4</span>
+    <button class="back-btn" onclick="saveDraft()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
     <div class="card" id="recap-client-card"></div>
@@ -473,7 +475,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-recap')">← Retour</button>
     <span class="hd-title">Photos avant intervention</span>
-    <span class="step-badge">4 / 4</span>
+    <button class="back-btn" onclick="saveDraft()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
     <div class="card">
@@ -544,10 +546,11 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
   <div class="hd"><div class="hd-row">
     <button class="back-btn" onclick="go('screen-recap')">← Retour</button>
     <span class="hd-title">Aperçu du devis</span>
+    <button class="back-btn" onclick="saveDraftSilent()" style="margin-left:auto;color:#f59e0b;border-color:#f59e0b">💾</button>
   </div></div>
   <div class="content">
-    <div id="pdf-preview-card" class="card" style="padding:0;overflow:hidden"></div>
-    <button class="btn-p" onclick="downloadPDF()">⬇ Télécharger en PDF</button>
+    <div id="pdf-preview-card" class="card" style="padding:0;overflow:hidden;max-height:60vh;overflow-y:auto"></div>
+    <button class="btn-p" onclick="sharePDF()">⬆ Partager / Imprimer le PDF</button>
     <button class="btn-p orange" onclick="go('screen-photos')">Photos du bien →</button>
   </div>
 </div>
@@ -569,6 +572,7 @@ canvas.sig-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
         <button class="filter-btn active" data-filter="status" data-val="all" onclick="setFilter('status','all',this)">Tous statuts</button>
+        <button class="filter-btn" data-filter="status" data-val="brouillon" onclick="setFilter('status','brouillon',this)">📝 Brouillons</button>
         <button class="filter-btn" data-filter="status" data-val="terrain_signé" onclick="setFilter('status','terrain_signé',this)">Signés</button>
         <button class="filter-btn" data-filter="status" data-val="reçu" onclick="setFilter('status','reçu',this)">Reçus</button>
       </div>
@@ -868,8 +872,11 @@ const SERVICES = {
     { key: 'canape', label: '🛋️ Canapé', unit: 'place(s)', priceHT: 130, priceHT2: 110 }, // priceHT2 = tarif 2+ places
   ],
   vitrerie: [
-    { key: 'fenetres', label: '🪟 Fenêtres', unit: 'fenêtre(s)', priceHT: 20 },
-    { key: 'miroirs', label: '🪞 Miroirs', unit: 'miroir(s)', priceHT: 8 },
+    { key: 'fenetres', label: '🪟 Fenêtres', unit: 'fenêtre(s)', priceHT: 30 },
+    { key: 'miroirs', label: '🪞 Miroirs', unit: 'miroir(s)', priceHT: 20 },
+    { key: 'verriere_demi', label: '🏗️ Verrière ½ journée', unit: 'forfait', priceHT: 300 },
+    { key: 'verriere_jour', label: '🏗️ Verrière 1 journée', unit: 'forfait', priceHT: 550 },
+    { key: 'verriere_cordiste', label: '🧗 Verrière cordiste', unit: 'journée', priceHT: 550 },
   ],
   menage: [
     { key: 'menage', label: '🧹 Ménage', unit: 'h', priceHT: 60, minQty: 4 },
@@ -1405,8 +1412,8 @@ function applyFilters() {
   if (!filtered.length) { document.getElementById('bo-list').innerHTML = '<div class="loading">Aucun devis pour ces filtres.</div>'; return; }
   document.getElementById('bo-list').innerHTML = filtered.map(q => {
     const qItems = allBoItems[q.id] || [];
-    const sc = q.pro_status === 'terrain_signé' ? 'terrain' : q.pro_status === 'reçu' ? 'recu' : 'other';
-    const sl = q.pro_status === 'terrain_signé' ? '✓ Terrain signé' : q.pro_status === 'reçu' ? 'Reçu' : q.pro_status || '—';
+    const sc = q.pro_status === 'terrain_signé' ? 'terrain' : q.pro_status === 'reçu' ? 'recu' : q.pro_status === 'brouillon' ? 'brouillon' : 'other';
+    const sl = q.pro_status === 'terrain_signé' ? '✓ Terrain signé' : q.pro_status === 'reçu' ? 'Reçu' : q.pro_status === 'brouillon' ? '📝 Brouillon' : q.pro_status || '—';
     const ds = q.created_at ? new Date(q.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
     const lh2 = qItems.slice(0, 3).map(it => `<div class="bo-line">• ${it.label} — ${it.qty} ${it.unit} — ${fmt(it.total_ht)} HT</div>`).join('');
     const notSigned = q.pro_status !== 'terrain_signé';
@@ -1584,11 +1591,55 @@ function renderPDFPreview() {
   document.getElementById('pdf-preview-card').innerHTML = buildPDFHTML();
 }
 
-function downloadPDF() {
-  const win = window.open('', '_blank');
-  if (!win) { alert("Autorisez les pop-ups pour télécharger le PDF."); return; }
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Devis ${currentRef}</title></head><body style="margin:0;padding:0">${buildPDFHTML()}<script>window.onload=()=>{window.print();}<\/script></body></html>`);
-  win.document.close();
+async function sharePDF() {
+  const html = buildPDFHTML();
+  const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Devis ${currentRef}</title>
+  <style>body{margin:0;padding:0;font-family:-apple-system,sans-serif}@media print{body{padding:0}}</style>
+  </head><body>${html}</body></html>`;
+
+  // Utiliser l'API de partage native iOS si disponible
+  if (navigator.share) {
+    try {
+      const blob = new Blob([fullHtml], { type: 'text/html' });
+      const file = new File([blob], `Devis-${currentRef}.html`, { type: 'text/html' });
+      await navigator.share({
+        title: `Devis ${currentRef}`,
+        text: `Devis La Maison Propre — ${currentRef}`,
+        files: [file],
+      });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // utilisateur a annulé
+      console.warn('Share files not supported, fallback to print');
+    }
+    // Fallback : partager sans fichier
+    try {
+      await navigator.share({ title: `Devis ${currentRef}`, text: `Devis La Maison Propre — ${currentRef}` });
+      return;
+    } catch (e) { console.warn('Share failed:', e); }
+  }
+
+  // Fallback final : ouvrir dans un iframe caché et imprimer
+  // On NE fait PAS window.open pour ne pas bloquer l'app
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
+  document.body.appendChild(iframe);
+  iframe.contentDocument.write(fullHtml);
+  iframe.contentDocument.close();
+  iframe.contentWindow.focus();
+  setTimeout(() => {
+    iframe.contentWindow.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  }, 500);
+}
+
+// Sauvegarde silencieuse (sans alert) pour le bouton 💾 de l'écran PDF
+async function saveDraftSilent() {
+  const btn = event.target;
+  btn.textContent = '⏳'; btn.disabled = true;
+  try { await saveDraftCore(); btn.textContent = '✅'; }
+  catch (e) { btn.textContent = '❌'; }
+  setTimeout(() => { btn.textContent = '💾'; btn.disabled = false; }, 2000);
 }
 
 // ── Tableau de bord ───────────────────────────────────────────────────────────
@@ -1660,6 +1711,52 @@ async function loadDashboard() {
     console.error('Dashboard error:', e);
     document.getElementById('dashboard-stats').innerHTML = '<p style="color:#ef4444;font-size:13px;grid-column:span 2">Erreur de connexion.</p>';
   }
+}
+
+// ── Sauvegarde brouillon ──────────────────────────────────────────────────────
+async function saveDraftCore() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) throw new Error('Nom client requis');
+  const isCustom = quoteType === 'custom';
+  const email = document.getElementById('c-email').value;
+  const phone = document.getElementById('c-phone').value;
+  const addr = document.getElementById('c-address').value;
+  const allItems = isCustom ? getCustomTotals().allItems : items;
+  const { totalHT, tva, totalTTC } = isCustom ? getCustomTotals() : getTotals();
+  if (!currentRef) currentRef = genRef();
+  const draftId = uuid();
+  const draftRow = {
+    id: draftId, client_name: name, client_email: email, client_phone: phone,
+    client_address: addr, total_ht: totalHT, tva, total_ttc: totalTTC,
+    pro_status: 'brouillon', ref: currentRef, company: currentCompany,
+    quote_type: isCustom ? 'custom' : 'classic',
+  };
+  await sbInsert('quotes', [draftRow]);
+  if (allItems.length) {
+    const dbItems = allItems.map(it => ({
+      id: uuid(), quote_id: draftId, famille_key: it.familyKey || 'edit',
+      service_key: it.serviceKey || 'edit', label: it.label, qty: it.qty,
+      unit: it.unit || '', price_ht: it.priceHT || 0, total_ht: it.totalHT || 0,
+      photo_url: null, meta: it.meta || null,
+    }));
+    await sbInsert('quote_items', dbItems);
+  }
+}
+
+async function saveDraft() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) { alert('Saisissez au moins le nom du client avant de sauvegarder.'); return; }
+  const btn = event.target;
+  btn.textContent = '⏳'; btn.disabled = true;
+  try {
+    await saveDraftCore();
+    btn.textContent = '✅';
+  } catch (e) {
+    console.error('Draft save error:', e);
+    btn.textContent = '❌';
+    alert('Erreur : ' + e.message);
+  }
+  setTimeout(() => { btn.textContent = '💾'; btn.disabled = false; }, 2000);
 }
 
 // ── Édition devis back office ─────────────────────────────────────────────────

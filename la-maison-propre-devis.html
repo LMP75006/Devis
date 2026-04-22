@@ -1052,15 +1052,29 @@ canvas.sig-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 10
 
 <!-- SUCCESS -->
 <div class="screen" id="screen-success">
-  <div class="success-wrap">
-    <div class="success-circle">✓</div>
-    <h2 style="font-size:22px;font-weight:900;margin-bottom:10px">Devis validé !</h2>
-    <p style="font-size:14px;color:#9ca3af;margin-bottom:6px" id="success-msg"></p>
-    <div id="sync-result" style="margin-bottom:28px"></div>
-    <div style="max-width:300px;margin:0 auto">
-      <button class="btn-p" onclick="nouveauDevis()">+ Nouveau devis</button>
-      <button class="btn-s" onclick="go('screen-home')">Accueil</button>
+  <div class="content" style="padding-top:40px">
+    <!-- Cercle animé -->
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="success-circle" id="success-circle" style="width:80px;height:80px;font-size:36px;margin:0 auto 16px">✓</div>
+      <h2 style="font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px">Devis validé !</h2>
+      <p style="font-size:14px;color:var(--text2)" id="success-msg"></p>
     </div>
+
+    <!-- Résumé devis -->
+    <div class="card" id="success-recap" style="margin-bottom:12px"></div>
+
+    <!-- Statuts sync -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">Synchronisation</div>
+      <div id="sync-result" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button class="btn-p" onclick="go('screen-backoffice')" style="margin-bottom:0">🗂 Back office</button>
+      <button class="btn-p" onclick="nouveauDevis()" style="margin-bottom:0">+ Nouveau devis</button>
+    </div>
+    <button class="btn-s" onclick="go('screen-home')">Retour à l'accueil</button>
   </div>
 </div>
 
@@ -1873,7 +1887,7 @@ function clearSig() {
 // ── Finaliser ─────────────────────────────────────────────────────────────────
 async function finaliser() {
   const btn = document.getElementById('btn-finaliser');
-  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  btn.disabled = true;
 
   const isCustom = quoteType === 'custom';
   const co = COMPANIES[currentCompany] || COMPANIES.lmp;
@@ -1882,67 +1896,110 @@ async function finaliser() {
   const addr = document.getElementById('c-address').value;
   const phone = document.getElementById('c-phone').value;
   const superficie = document.getElementById('c-superficie').value;
+  const etage = document.getElementById('c-etage').value;
+  const ascenseur = document.getElementById('c-ascenseur').value;
   const freq = document.getElementById(isCustom ? 'custom-frequence' : 'frequence').value;
   const notes = document.getElementById(isCustom ? 'custom-notes' : 'notes').value;
+  const dateIntervention = document.getElementById('c-date-intervention').value;
 
   const allItems = isCustom ? getCustomTotals().allItems : items;
   const { subtotal, disc, totalHT, tva, totalTTC } = isCustom ? getCustomTotals() : getTotals();
-  const quoteId = uuid();
 
-  // Incrémenter le compteur de référence uniquement
+  if (!allItems.length || totalTTC <= 0) {
+    alert('Le devis est vide ou le montant est nul.');
+    btn.disabled = false; return;
+  }
+
+  // Naviguer vers l'écran succès en mode chargement
+  go('screen-success');
+  document.getElementById('success-circle').textContent = '⏳';
+  document.getElementById('success-circle').style.background = '#1a1200';
+  document.getElementById('success-circle').style.borderColor = '#3a2e00';
+  document.getElementById('success-msg').textContent = 'Enregistrement en cours…';
+  document.getElementById('success-recap').style.display = 'none';
+
+  const setSyncRow = (id, icon, label, status) => {
+    const el = document.getElementById(id); if (!el) return;
+    const color = status === 'ok' ? 'var(--green)' : status === 'error' ? 'var(--red)' : 'var(--text2)';
+    const txt = status === 'ok' ? 'Succès ✓' : status === 'error' ? 'Échec ✗' : '…';
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">${icon}</span><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${label}</div><div style="font-size:12px;color:${color};margin-top:2px">${txt}</div></div></div>`;
+  };
+
+  document.getElementById('sync-result').innerHTML = `<div id="sync-row-db"></div><div id="sync-row-email"></div><div id="sync-row-axonaut"></div>`;
+  setSyncRow('sync-row-db', '🗄️', 'Sauvegarde Supabase', 'pending');
+  setSyncRow('sync-row-email', '📧', 'Email client', 'pending');
+  setSyncRow('sync-row-axonaut', '🔗', 'Axonaut CRM', 'pending');
+
+  // ── 1. Supabase ──────────────────────────────────────────────────────────
   devisCounter++; localStorage.setItem('lmp_counter', devisCounter);
 
-  // ── Supabase — toujours en priorité, local uniquement si échec ───────────
-  let syncOk = false;
+  // Détecter un brouillon existant pour cette ref → évite le doublon
+  let quoteId = uuid();
+  let existingDraftId = null;
+  try {
+    const existing = await sbSelect('quotes', `ref=eq.${currentRef}&pro_status=eq.brouillon&select=id`);
+    if (existing && existing.length > 0) { existingDraftId = existing[0].id; quoteId = existingDraftId; }
+  } catch (e) { /* pas de brouillon */ }
+
   const quoteRow = { id: quoteId, client_name: name, client_email: email, client_phone: phone, client_address: addr, total_ht: totalHT, tva, total_ttc: totalTTC, pro_status: 'terrain_signé', ref: currentRef, company: currentCompany, quote_type: isCustom ? 'custom' : 'classic' };
   const dbItems = allItems.map(it => ({ id: uuid(), quote_id: quoteId, famille_key: it.familyKey, service_key: it.serviceKey, label: it.label, qty: it.qty, unit: it.unit, price_ht: it.priceHT, total_ht: it.totalHT, photo_url: null, meta: it.meta || null }));
 
+  let syncOk = false;
   try {
-    await sbInsert('quotes', [quoteRow]);
+    if (existingDraftId) {
+      await sbUpdate('quotes', existingDraftId, quoteRow);
+      await sbDelete('quote_items', `quote_id=eq.${existingDraftId}`);
+    } else {
+      await sbInsert('quotes', [quoteRow]);
+    }
     if (dbItems.length) await sbInsert('quote_items', dbItems);
     syncOk = true;
+    setSyncRow('sync-row-db', '🗄️', 'Sauvegarde Supabase', 'ok');
     sendPushNotification(`Vasco — Nouveau devis signé`, `${name} • ${fmt(totalTTC)} TTC • ${currentRef}`);
   } catch (e) {
-    // Supabase inaccessible → file d'attente locale
-    console.warn('Supabase indisponible, mise en file hors ligne:', e.message);
+    console.warn('Supabase:', e.message);
+    setSyncRow('sync-row-db', '🗄️', 'Sauvegarde Supabase', 'error');
     addToOfflineQueue(quoteRow, dbItems);
-    // Sauvegarder en local uniquement dans ce cas
     const dateStr = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
-    const h = lh();
-    h.unshift({ name, date: dateStr, amount: Math.round(totalTTC) + '€', totalTTC, status: 'signed', ref: currentRef, type: isCustom ? 'custom' : 'classic', company: currentCompany });
-    sh(h);
+    const h = lh(); h.unshift({ name, date: dateStr, amount: Math.round(totalTTC) + '€', totalTTC, status: 'signed', ref: currentRef, type: isCustom ? 'custom' : 'classic', company: currentCompany }); sh(h);
   }
 
-  // Email via proxy Vercel
-  const etage = document.getElementById('c-etage').value;
-  const ascenseur = document.getElementById('c-ascenseur').value;
-  const dateIntervention = document.getElementById('c-date-intervention').value;
+  // ── 2. Email + Axonaut ───────────────────────────────────────────────────
   const emailData = { ref: currentRef, quoteType, company: currentCompany, name, address: addr, phone, email, superficie, etage, ascenseur, logement: SL, subject: SS, freq, notes, items: allItems, subtotal, disc, totalHT, tva, totalTTC, dateIntervention, photosCount: photos.length };
   const html = buildEmailHTML(emailData);
-  let emailOk = false;
-  let axonautOk = false;
-  // Email client + Axonaut (premier appel avec devisData)
-  if (email) {
-    const r = await sendEmail(email, `Votre devis ${co.name} — Réf. ${currentRef}`, html, currentCompany, emailData);
-    emailOk = r && r.success;
-    axonautOk = r && r.results && r.results.axonaut && r.results.axonaut.success;
-  } else {
-    // Pas d'email client mais on envoie quand même à Axonaut via email interne
-    const r = await sendEmail(co.email, `[Terrain] Nouveau devis — ${name} — ${currentRef}`, html, currentCompany, emailData);
-    axonautOk = r && r.results && r.results.axonaut && r.results.axonaut.success;
-  }
-  // Copie interne (sans devisData pour éviter doublon Axonaut)
-  if (email) await sendEmail(co.email, `[Terrain] Nouveau devis — ${name} — ${currentRef}`, html, currentCompany, null);
+  let emailOk = false, axonautOk = false;
+  try {
+    if (email) {
+      const r = await sendEmail(email, `Votre devis ${co.name} — Réf. ${currentRef}`, html, currentCompany, emailData);
+      emailOk = r && r.success;
+      axonautOk = r && r.results && r.results.axonaut && r.results.axonaut.success;
+    } else {
+      const r = await sendEmail(co.email, `[Terrain] Nouveau devis — ${name} — ${currentRef}`, html, currentCompany, emailData);
+      axonautOk = r && r.results && r.results.axonaut && r.results.axonaut.success;
+    }
+    if (email) await sendEmail(co.email, `[Terrain] Nouveau devis — ${name} — ${currentRef}`, html, currentCompany, null);
+  } catch (e) { console.warn('Email/Axonaut:', e.message); }
 
-  document.getElementById('success-msg').textContent = `Devis ${currentRef} signé pour ${name}.`;
-  const badges = [];
-  const offlineCount = Math.max(0, getOfflineQueue().length);
-  badges.push(`<span class="sync-badge"><span class="sync-dot ${syncOk ? '' : 'error'}"></span>${syncOk ? 'Synchronisé ✓' : `Hors ligne — ${offlineCount} en attente`}</span>`);
-  if (email) badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${emailOk ? '#22c55e' : '#f97316'}"></span>${emailOk ? 'Email envoyé' : 'Email en attente'}</span>`);
-  badges.push(`<span class="sync-badge"><span class="sync-dot" style="background:${axonautOk ? '#22c55e' : '#f97316'}"></span>${axonautOk ? 'Axonaut ✓' : 'Axonaut en attente'}</span>`);
-  document.getElementById('sync-result').innerHTML = badges.join(' ');
-  btn.disabled = false; btn.textContent = 'Valider et envoyer →';
-  go('screen-success');
+  setSyncRow('sync-row-email', '📧', email ? `Email → ${email}` : 'Email interne', emailOk ? 'ok' : email ? 'error' : 'ok');
+  setSyncRow('sync-row-axonaut', '🔗', 'Axonaut CRM', axonautOk ? 'ok' : 'error');
+
+  // ── 3. Finaliser l'écran succès ──────────────────────────────────────────
+  document.getElementById('success-circle').textContent = '✓';
+  document.getElementById('success-circle').style.background = '#091a09';
+  document.getElementById('success-circle').style.borderColor = '#1a4a1a';
+  document.getElementById('success-msg').textContent = `${currentRef} · ${name}`;
+
+  const recap = document.getElementById('success-recap');
+  recap.style.display = '';
+  recap.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div><div style="font-size:16px;font-weight:800;letter-spacing:-.01em">${name}</div>${addr ? `<div style="font-size:12px;color:var(--text2);margin-top:2px">${addr}</div>` : ''}</div>
+      <div style="text-align:right"><div style="font-size:20px;font-weight:900;color:var(--accent)">${fmt(totalTTC)}</div><div style="font-size:11px;color:var(--text2)">TTC</div></div>
+    </div>
+    ${allItems.slice(0, 4).map(it => `<div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--border2);font-size:13px"><span style="color:var(--text2)">${it.label.replace(/[^\x00-\x7F\u00C0-\u024F\u1E00-\u1EFF ]/g,'').trim()}</span><span style="font-weight:700">${fmt(it.totalHT)} HT</span></div>`).join('')}
+    ${allItems.length > 4 ? `<div style="font-size:12px;color:var(--text3);padding-top:6px;border-top:1px solid var(--border2)">+ ${allItems.length - 4} autre(s) prestation(s)</div>` : ''}`;
+
+  btn.disabled = false;
 }
 
 // ── Nouveau devis ─────────────────────────────────────────────────────────────
@@ -2250,11 +2307,9 @@ async function sharePDF() {
 
 // Sauvegarde silencieuse (sans alert) pour le bouton 💾 de l'écran PDF
 async function saveDraftSilent() {
-  const btn = event.target;
-  btn.textContent = '⏳'; btn.disabled = true;
-  try { await saveDraftCore(); btn.textContent = '✅'; }
-  catch (e) { btn.textContent = '❌'; }
-  setTimeout(() => { btn.textContent = '💾'; btn.disabled = false; }, 2000);
+  const name = document.getElementById("c-name").value.trim();
+  if (!name) return;
+  try { await saveDraftCore(); } catch (e) { console.warn("Draft silent:", e.message); }
 }
 
 // ── Tableau de bord ───────────────────────────────────────────────────────────

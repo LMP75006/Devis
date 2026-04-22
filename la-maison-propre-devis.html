@@ -705,56 +705,12 @@ canvas.sig-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 10
 <body>
 <div class="app">
 
-<!-- LOGIN -->
-<div class="screen active" id="screen-login">
-  <div style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:40px 24px">
-    <div style="text-align:center;margin-bottom:48px">
-      <div style="width:64px;height:64px;border-radius:18px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px">🧹</div>
-      <div style="font-family:var(--font-display);font-size:32px;letter-spacing:-.02em;margin-bottom:8px">Vasco</div>
-      <div style="font-size:14px;color:var(--text2)">Application de devis terrain</div>
-    </div>
-
-    <div id="login-form-wrap">
-      <div class="card">
-        <div class="card-title">Connexion</div>
-        <div class="field">
-          <label>Votre email professionnel</label>
-          <input type="email" id="login-email" placeholder="prenom@lamaisonpropre.fr" autocomplete="email" autocapitalize="none">
-        </div>
-        <button class="btn-primary" id="login-btn" onclick="sendMagicLink()" style="background:var(--text);color:var(--bg);border:none">
-          Recevoir mon lien de connexion
-        </button>
-        <p style="font-size:12px;color:var(--text2);text-align:center;margin-top:12px;line-height:1.5">
-          Vous recevrez un lien par email.<br>Cliquez dessus pour vous connecter.
-        </p>
-      </div>
-    </div>
-
-    <div id="login-sent-wrap" style="display:none">
-      <div class="card" style="text-align:center">
-        <div style="font-size:40px;margin-bottom:16px">📧</div>
-        <div style="font-size:17px;font-weight:700;margin-bottom:8px">Email envoyé !</div>
-        <p style="font-size:14px;color:var(--text2);line-height:1.5">
-          Vérifiez votre boîte mail et cliquez sur le lien de connexion.<br><br>
-          <span style="color:var(--text3);font-size:12px">Le lien expire dans 1 heure.</span>
-        </p>
-        <button class="btn-s" onclick="document.getElementById('login-sent-wrap').style.display='none';document.getElementById('login-form-wrap').style.display=''" style="margin-top:16px">
-          ← Ressaisir mon email
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- HOME -->
-<div class="screen" id="screen-home">
+<div class="screen active" id="screen-home">
   <div class="home-hero" id="home-hero">
-    <div class="home-logo-row anim-1" style="justify-content:space-between">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="home-logo-mark">🧹</div>
-        <span class="home-logo-name">Vasco</span>
-      </div>
-      <button onclick="go('screen-settings')" style="background:none;border:1px solid var(--border);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--text2);cursor:pointer;font-family:var(--font)">⚙️</button>
+    <div class="home-logo-row anim-1">
+      <div class="home-logo-mark">🧹</div>
+      <span class="home-logo-name">Vasco</span>
     </div>
     <div class="home-eyebrow anim-2" id="home-brand">Choisissez votre société</div>
     <h1 class="home-title anim-2" id="home-title">Vos devis,<br><em id="home-em">en quelques</em> minutes.</h1>
@@ -800,40 +756,6 @@ canvas.sig-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 10
       <span style="font-size:13px;color:#22c55e">🆕 Mise à jour disponible</span>
       <button onclick="applyUpdate()" style="padding:7px 14px;background:#22c55e;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:900;cursor:pointer;font-family:var(--font)">Appliquer</button>
     </div>
-  </div>
-</div>
-
-<!-- PARAMÈTRES -->
-<div class="screen" id="screen-settings">
-  <div class="hd"><div class="hd-row">
-    <button class="back-btn" onclick="go('screen-home')">← Retour</button>
-    <span class="hd-title">Paramètres</span>
-  </div></div>
-  <div class="content">
-    <div class="card">
-      <div class="card-title">Compte</div>
-      <div style="display:flex;align-items:center;gap:14px;padding:8px 0">
-        <div style="width:44px;height:44px;border-radius:50%;background:var(--accent-glow);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">👤</div>
-        <div>
-          <div style="font-size:15px;font-weight:700" id="settings-name">—</div>
-          <div style="font-size:13px;color:var(--text2);margin-top:2px" id="settings-email">—</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Application</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
-        <span style="font-size:14px;color:var(--text2)">Version</span>
-        <span style="font-size:14px;font-weight:600">1.0.0</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border2)">
-        <span style="font-size:14px;color:var(--text2)">Environnement</span>
-        <span style="font-size:14px;font-weight:600">Production</span>
-      </div>
-    </div>
-    <button class="btn-p" onclick="signOut()" style="border-color:var(--red);color:var(--red);margin-top:8px">
-      Se déconnecter
-    </button>
   </div>
 </div>
 
@@ -1475,140 +1397,17 @@ function onCgvChange() {
   if (checked) initSig();
 }
 
-// ── Auth Supabase ─────────────────────────────────────────────────────────────
-let currentUser = null;
-let authToken = SB_KEY; // Commence avec la clé anon, remplacé par le token utilisateur après login
-
-async function sbAuth(method, path, body) {
-  const r = await fetch(`${SB_URL}/auth/v1${path}`, {
-    method,
-    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json', ...(authToken !== SB_KEY ? { 'Authorization': `Bearer ${authToken}` } : {}) },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const text = await r.text();
-  try { return { ok: r.ok, data: JSON.parse(text) }; }
-  catch { return { ok: r.ok, data: text }; }
-}
-
-async function sendMagicLink() {
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
-  if (!email || !email.includes('@')) { alert('Saisissez un email valide.'); return; }
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true; btn.textContent = 'Envoi en cours…';
-  const r = await sbAuth('POST', '/magiclink', { email });
-  if (r.ok) {
-    document.getElementById('login-form-wrap').style.display = 'none';
-    document.getElementById('login-sent-wrap').style.display = '';
-  } else {
-    alert('Erreur : ' + (r.data?.msg || 'Impossible d\'envoyer le lien.'));
-  }
-  btn.disabled = false; btn.textContent = 'Recevoir mon lien de connexion';
-}
-
-function setSession(session) {
-  if (!session || !session.access_token) return;
-  authToken = session.access_token;
-  currentUser = session.user;
-  // Stocker en local pour persistance
-  localStorage.setItem('vasco_session', JSON.stringify({
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-    expires_at: session.expires_at || (Date.now() / 1000 + 3600),
-    user: session.user,
-  }));
-  onLoginSuccess();
-}
-
-function onLoginSuccess() {
-  const email = currentUser?.email || '';
-  const name = email.split('@')[0].replace(/\./g, ' ');
-  const displayName = name.charAt(0).toUpperCase() + name.slice(1);
-
-  // Mettre à jour l'écran paramètres
-  const sName = document.getElementById('settings-name');
-  const sEmail = document.getElementById('settings-email');
-  if (sName) sName.textContent = displayName;
-  if (sEmail) sEmail.textContent = email;
-
-  // Mettre à jour le titre de l'accueil
-  document.getElementById('home-title').innerHTML = `Bonjour <em id="home-em">${displayName}</em> 👋`;
-
-  go('screen-home');
-}
-
-async function refreshSession(stored) {
-  if (!stored.refresh_token) return false;
-  const r = await sbAuth('POST', '/token?grant_type=refresh_token', { refresh_token: stored.refresh_token });
-  if (r.ok && r.data?.access_token) {
-    setSession(r.data);
-    return true;
-  }
-  return false;
-}
-
-async function checkSession() {
-  // Vérifier si le token est dans l'URL (retour Magic Link)
-  const hash = window.location.hash;
-  if (hash.includes('access_token')) {
-    const params = new URLSearchParams(hash.replace('#', ''));
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    if (accessToken) {
-      // Récupérer les infos utilisateur
-      authToken = accessToken;
-      const r = await sbAuth('GET', '/user');
-      if (r.ok && r.data?.id) {
-        setSession({ access_token: accessToken, refresh_token: refreshToken, user: r.data });
-        // Nettoyer l'URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-      }
-    }
-  }
-
-  // Vérifier la session stockée
-  try {
-    const stored = JSON.parse(localStorage.getItem('vasco_session') || 'null');
-    if (stored && stored.access_token) {
-      const now = Date.now() / 1000;
-      if (stored.expires_at && stored.expires_at > now + 60) {
-        // Session encore valide
-        authToken = stored.access_token;
-        currentUser = stored.user;
-        onLoginSuccess();
-        return;
-      } else {
-        // Session expirée → refresh
-        const ok = await refreshSession(stored);
-        if (ok) return;
-      }
-    }
-  } catch (e) { /* pas de session */ }
-
-  // Aucune session → écran login
-  go('screen-login');
-}
-
-async function signOut() {
-  await sbAuth('POST', '/logout');
-  authToken = SB_KEY;
-  currentUser = null;
-  localStorage.removeItem('vasco_session');
-  go('screen-login');
-}
-
-// Mettre à jour les requêtes Supabase pour utiliser le token utilisateur
 async function sbInsert(t, r) {
   const res = await fetch(`${SB_URL}/rest/v1/${t}`, {
     method: 'POST',
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + authToken, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify(r),
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(r)
   });
   if (!res.ok) throw new Error(await res.text());
 }
 async function sbSelect(t, qs = '') {
   const r = await fetch(`${SB_URL}/rest/v1/${t}?${qs}&order=created_at.desc`, {
-    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + authToken }
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
   });
   if (!r.ok) throw new Error(await r.text());
   return r.json();
@@ -2936,7 +2735,6 @@ updateStats();
 renderCatalogue();
 initOfflineQueue();
 requestPushPermission();
-checkSession(); // Vérifier la session auth au démarrage
 // ── Service Worker — mise à jour automatique ──────────────────────────────────
 let swRegistration = null;
 let updateReady = false;

@@ -1659,6 +1659,9 @@ function renderCatalogue() {
     b.onclick = () => { CS = sv.key; renderCatalogue(); };
     sg.appendChild(b);
   });
+  // isDivers doit être défini AVANT d'être utilisé
+  const svc = getSvc();
+  const isDivers = svc && svc.isDivers;
   const hc = document.getElementById('hauteur-card'), hg = document.getElementById('height-grid');
   if (CF === 'vitrerie' && !isDivers) {
     hc.style.display = ''; hg.innerHTML = '';
@@ -1670,8 +1673,6 @@ function renderCatalogue() {
     });
     document.getElementById('height-other-field').style.display = CH === 'other' ? '' : 'none';
   } else { hc.style.display = 'none'; CH = 'normal'; }
-  const svc = getSvc();
-  const isDivers = svc && svc.isDivers;
   document.getElementById('qty-card').style.display = isDivers ? 'none' : '';
   document.getElementById('divers-card').style.display = isDivers ? '' : 'none';
   if (!isDivers) {
@@ -1988,6 +1989,7 @@ function applyFilters() {
   const search = (document.getElementById('bo-search')?.value || '').toLowerCase().trim();
   const now = new Date();
   let filtered = allBoQuotes.filter(q => {
+    if (boFilters.company !== 'all' && q.company !== boFilters.company) return false;
     if (boFilters.status !== 'all' && q.pro_status !== boFilters.status) return false;
     if (min && (q.total_ttc || 0) < min) return false;
     if (max < Infinity && (q.total_ttc || 0) > max) return false;

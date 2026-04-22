@@ -1114,6 +1114,8 @@ function addDiversItem() {
   document.getElementById('divers-mini-sum').style.display = 'none';
   renderItemsList();
 }
+function getSvc() { return (SERVICES[CF] || []).find(s => s.key === CS); }
+
 function getPrice(qtyOverride) {
   const svc = getSvc(); if (!svc) return 0;
   const qty = qtyOverride !== undefined ? qtyOverride : pn(document.getElementById('qty-input').value);
